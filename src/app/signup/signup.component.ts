@@ -3,14 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-signup',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  template: `
-    <router-outlet></router-outlet>
-  `,
-  styleUrls: ['./app.component.css']
+  templateUrl: './signup.component.html',
+  styleUrls: ['./signup.component.css']
 })
-export class AppComponent {
-  title = 'my-angular-app';
-}
+export class SignupComponent {}
