@@ -15,6 +15,7 @@ export class AuthCallbackComponent implements OnInit {
 
   async ngOnInit() {
     await this.authService.completeAuthentication();
-    this.router.navigate(['/']);
+    // add in logic to send b2c token to backend and await response before redirecting
+    this.router.navigate(['/home']);
   }
 }
