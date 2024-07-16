@@ -10,18 +10,12 @@ export class AuthInterceptor implements HttpInterceptor {
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const accessToken = this.authService.getAccessToken();
-    console.log(accessToken);
     if (accessToken) {
       request = request.clone({
         setHeaders: {
           Authorization: `Bearer ${accessToken}`,
         },
       });
-    }
-
-    // Log the access token to the console after B2C login
-    if (accessToken) {
-      console.log('Access Token after B2C login:', accessToken);
     }
 
     return next.handle(request);
