@@ -6,10 +6,12 @@ import { routes } from './app/app-routing.module';
 import { AppComponent } from './app/app.component';
 import { AuthInterceptor } from './app/auth.interceptor';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(BrowserModule),
+    importProvidersFrom(HttpClientModule),
     provideRouter(routes),
     {
       provide: HTTP_INTERCEPTORS,
