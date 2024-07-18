@@ -1,0 +1,11 @@
+<!-- auth-callback.component.html -->
+
+<div *ngIf="user">
+  <!-- <h1>Welcome, {{ user.name }}!</h1>
+  <p>Your access token: {{ user.access_token }}</p> -->
+  <!-- <button (click)="logout()">Logout</button> -->
+</div>
+
+<div *ngIf="!user">
+  <h1>Loading...</h1>
+</div>
