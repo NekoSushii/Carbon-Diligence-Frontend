@@ -30,7 +30,6 @@ export class AuthService {
 
   async completeAuthentication() {
     this.user = await this.userManager.signinRedirectCallback();
-    // this.router.navigate(['/home']);
   }
 
   logout() {
@@ -42,6 +41,7 @@ export class AuthService {
   }
 
   getAccessToken() {
+    // console.log(this.user);
     return this.user ? this.user.access_token : null;
   }
 }

@@ -27,15 +27,14 @@ export class AuthCallbackComponent implements OnInit {
       const key = Utf8.parse("CarbonDiligenceCarbonDiligence32");
       const iv = Utf8.parse("1234567890123456");
       const message = token.toString();
-      console.log("message" + message);
+      // console.log("message: " + message);
       const encryptedToken = AES.encrypt(message, key, {iv: iv}).toString();
-      console.log("encrypted key: " + encryptedToken);
 
       try {
-        const response: any = await lastValueFrom(this.http.post('http://localhost:5000/api/set-session', { token: encryptedToken }));
-        console.log('Token sent to backend successfully');
+        const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/set-session', { token: encryptedToken }));
+        console.log('Token sent to backend successfully, response:');
         console.log(response);
-        // sessionStorage.setItem('jwtToken', token);
+        sessionStorage.setItem('jwtToken', token);
       } catch (error) {
         console.error('Error sending token to backend:', error);
       }
