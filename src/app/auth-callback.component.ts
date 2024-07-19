@@ -27,19 +27,14 @@ export class AuthCallbackComponent implements OnInit {
       const key = Utf8.parse("CarbonDiligenceCarbonDiligence32");
       const iv = Utf8.parse("1234567890123456");
       const message = token.toString();
-      // console.log("message: " + message);
       const encryptedToken = AES.encrypt(message, key, {iv: iv}).toString();
-      // console.log("encrypted Token: ", encryptedToken);
 
       try {
         const quotedToken = `"${encryptedToken}"`;
-        // console.log(encryptedToken);
         const headers = { 'Content-Type': 'application/json' };
         const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/Login/Authenticate', quotedToken, { headers }));
-        // console.log(response);
 
         if (response) {
-          console.log(response);
             sessionStorage.setItem('jwtToken', response.jwtToken);
         } else {
             console.error('Invalid response received from the server.');

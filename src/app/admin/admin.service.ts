@@ -11,7 +11,6 @@ export class AdminService {
 
   getUsersData(): Observable<{ email: string, name: string, roles: string, id: string }[]> {
     const token = sessionStorage.getItem('jwtToken');
-    console.log(token);
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });

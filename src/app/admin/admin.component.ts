@@ -46,11 +46,9 @@ export class AdminComponent implements OnInit {
 
   saveChanges() {
     // TODO: add in validation checks
-    console.log(this.selectedUser);
 
     const userId = this.selectedUser.id;
     const token = sessionStorage.getItem('jwtToken'); // Retrieve the token from session storage
-    console.log(token);
 
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Set the Authorization header
 
