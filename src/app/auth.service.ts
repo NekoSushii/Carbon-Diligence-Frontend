@@ -42,6 +42,7 @@ export class AuthService {
   }
 
   getAccessToken() {
+    // console.log(this.user);
     return this.user ? this.user.access_token : null;
   }
 }
