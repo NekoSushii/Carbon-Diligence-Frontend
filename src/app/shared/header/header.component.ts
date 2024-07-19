@@ -26,6 +26,7 @@ import { AuthService } from '../../auth.service';
         top: 0;
         left: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* Ensure header stays on top */
       }
       a {
         margin-right: 15px;

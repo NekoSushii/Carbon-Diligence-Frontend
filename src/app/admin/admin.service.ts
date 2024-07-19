@@ -10,7 +10,7 @@ export class AdminService {
 
   constructor(private http: HttpClient) {}
 
-  getUsersData(): Observable<{ email: string, name: string, roles: string }[]> {
-    return this.http.get<{ email: string, name: string, roles: string }[]>(this.apiUrl);
+  getUsersData(): Observable<{ email: string, name: string, roles: string, id: string }[]> {
+    return this.http.get<{ email: string, name: string, roles: string, id: string }[]>(this.apiUrl);
   }
 }

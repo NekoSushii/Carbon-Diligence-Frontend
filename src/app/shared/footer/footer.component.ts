@@ -19,6 +19,8 @@ import { CommonModule } from '@angular/common';
         position: fixed;
         width: 100%;
         bottom: 0;
+        left: 0;
+        z-index: 1000; /* Ensure footer stays on top */
       }
     `
   ]

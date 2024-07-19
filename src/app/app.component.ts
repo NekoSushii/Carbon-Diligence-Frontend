@@ -12,9 +12,9 @@ import { Observable } from 'rxjs';
   imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent],
   template: `
     <app-header *ngIf="showHeader$ | async"></app-header>
-    <div class="content">
+    <main class="content">
       <router-outlet></router-outlet>
-    </div>
+    </main>
     <app-footer></app-footer>
   `,
   styles: [
@@ -22,24 +22,23 @@ import { Observable } from 'rxjs';
       :host {
         display: flex;
         flex-direction: column;
-        min-height: 100vh;
-        padding-top: 60px; /* Adjust for header height */
-        padding-bottom: 40px; /* Adjust for footer height */
+        height: 100vh;
+        overflow: hidden; /* Ensure no overflow */
       }
-      .content {
+      main.content {
         flex: 1;
+        overflow: auto; /* Allow content to scroll if necessary */
         padding: 20px;
-      }
-      router-outlet {
-        display: block;
-        margin: 0 auto;
-        max-width: 1200px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* Center content vertically */
+        align-items: center; /* Center content horizontally */
       }
     `
   ]
 })
 export class AppComponent implements OnInit {
-  title = 'Carbon Diligence';
+  title = 'my-angular-app';
   showHeader$: Observable<boolean>;
 
   constructor(private layoutService: LayoutService) {
@@ -47,6 +46,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-
+    // Any additional initialization logic can go here
   }
 }

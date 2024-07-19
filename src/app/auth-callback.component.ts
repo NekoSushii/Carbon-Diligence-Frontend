@@ -29,6 +29,7 @@ export class AuthCallbackComponent implements OnInit {
       const message = token.toString();
       // console.log("message: " + message);
       const encryptedToken = AES.encrypt(message, key, {iv: iv}).toString();
+      console.log("encrypted Token: ", encryptedToken);
 
       try {
         const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/set-session', { token: encryptedToken }));

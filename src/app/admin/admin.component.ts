@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminService } from './admin.service';
+import { HttpClient } from '@angular/common/http'; // Import HttpClient
 
 @Component({
   selector: 'app-admin',
@@ -11,10 +12,10 @@ import { AdminService } from './admin.service';
   styleUrls: ['./admin.component.css']
 })
 export class AdminComponent implements OnInit {
-  usersData: { email: string, name: string, roles: string }[] = [];
-  selectedUser: { email: string, name: string, roles: string } = { email: '', name: '', roles: '' }; // Initialize selectedUser here
+  usersData: { email: string, name: string, roles: string, id: string }[] = [];
+  selectedUser: { email: string, name: string, roles: string, id: string } = { email: '', name: '', roles: '', id: this.usersData.length > 0 ? this.usersData[0].id : '' };
 
-  constructor(private adminService: AdminService) {}
+  constructor(private adminService: AdminService, private http: HttpClient) {}
 
   ngOnInit() {
     this.adminService.getUsersData().subscribe(data => {
@@ -23,7 +24,7 @@ export class AdminComponent implements OnInit {
     });
   }
 
-  openModal(user: { email: string, name: string, roles: string }) {
+  openModal(user: { email: string, name: string, roles: string, id: string }) {
     this.selectedUser = { ...user };
     const modal = document.getElementById('myModal');
     if (modal) {
@@ -44,9 +45,11 @@ export class AdminComponent implements OnInit {
 
   saveChanges() {
     // TODO: add in validation checks
-    // TODO: make the role and permission fields multiselect dropdown using values stored in database
-    console.log(`Email: ${this.selectedUser.email}`);
-    console.log(`Name: ${this.selectedUser.name}`);
-    console.log(`Roles: ${this.selectedUser.roles}`);
+    console.log(this.selectedUser);
+    this.http.put('http://localhost:5076/api/Session/update-user', this.selectedUser).subscribe(response => {
+      console.log('Put request successful:', response);
+    }, error => {
+      console.error('Error making PUT request:', error);
+    });
   }
 }
