@@ -29,16 +29,25 @@ export class AuthCallbackComponent implements OnInit {
       const message = token.toString();
       // console.log("message: " + message);
       const encryptedToken = AES.encrypt(message, key, {iv: iv}).toString();
-      console.log("encrypted Token: ", encryptedToken);
+      // console.log("encrypted Token: ", encryptedToken);
 
       try {
-        const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/set-session', { token: encryptedToken }));
-        console.log('Token sent to backend successfully, response:');
-        console.log(response);
-        sessionStorage.setItem('jwtToken', token);
-      } catch (error) {
+        const quotedToken = `"${encryptedToken}"`;
+        // console.log(encryptedToken);
+        const headers = { 'Content-Type': 'application/json' };
+        const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/Login/Authenticate', quotedToken, { headers }));
+        // console.log(response);
+
+        if (response) {
+          console.log(response);
+            sessionStorage.setItem('jwtToken', response.jwtToken);
+        } else {
+            console.error('Invalid response received from the server.');
+        }
+    } catch (error) {
         console.error('Error sending token to backend:', error);
-      }
+    }
+
     } else {
       console.error('Token is null. Unable to send token to backend.');
     }

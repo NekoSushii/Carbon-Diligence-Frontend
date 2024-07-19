@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminService } from './admin.service';
-import { HttpClient } from '@angular/common/http'; // Import HttpClient
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-admin',
@@ -14,13 +14,14 @@ import { HttpClient } from '@angular/common/http'; // Import HttpClient
 export class AdminComponent implements OnInit {
   usersData: { email: string, name: string, roles: string, id: string }[] = [];
   selectedUser: { email: string, name: string, roles: string, id: string } = { email: '', name: '', roles: '', id: this.usersData.length > 0 ? this.usersData[0].id : '' };
+  loading: boolean = true;
 
   constructor(private adminService: AdminService, private http: HttpClient) {}
 
   ngOnInit() {
     this.adminService.getUsersData().subscribe(data => {
       this.usersData = data;
-      console.log(this.usersData);
+      this.loading = false;
     });
   }
 
@@ -46,10 +47,18 @@ export class AdminComponent implements OnInit {
   saveChanges() {
     // TODO: add in validation checks
     console.log(this.selectedUser);
-    this.http.put('http://localhost:5076/api/Session/update-user', this.selectedUser).subscribe(response => {
-      console.log('Put request successful:', response);
-    }, error => {
-      console.error('Error making PUT request:', error);
-    });
+
+    const userId = this.selectedUser.id;
+    const token = sessionStorage.getItem('jwtToken'); // Retrieve the token from session storage
+    console.log(token);
+
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Set the Authorization header
+
+    this.http.put(`http://localhost:5076/api/User/${userId}`, this.selectedUser, { headers })
+      .subscribe(response => {
+        console.log('Put request successful:', response);
+      }, error => {
+        console.error('Error in Put request for .../api/User/update-user:', error);
+      });
   }
 }

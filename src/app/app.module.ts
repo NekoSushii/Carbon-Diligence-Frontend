@@ -10,10 +10,10 @@ import { FooterComponent } from './shared/footer/footer.component';
   imports: [
     BrowserModule,
     HttpClientModule,
-    FooterComponent
+    FooterComponent,
+    HeaderComponent
   ],
   declarations: [
-    HeaderComponent,
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

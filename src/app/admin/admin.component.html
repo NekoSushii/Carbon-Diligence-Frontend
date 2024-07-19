@@ -1,4 +1,8 @@
-<table>
+<div *ngIf="usersData.length === 0">
+  <p>Loading...</p>
+</div>
+
+<table *ngIf="usersData.length > 0">
   <tr>
     <th>Email</th>
     <th>Name</th>
@@ -28,5 +32,3 @@
     <button (click)="saveChanges()">Save Changes</button>
   </div>
 </div>
-
-
