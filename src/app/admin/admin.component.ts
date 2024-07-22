@@ -46,11 +46,10 @@ export class AdminComponent implements OnInit {
 
   saveChanges() {
     // TODO: add in validation checks
-
     const userId = this.selectedUser.id;
-    const token = sessionStorage.getItem('jwtToken'); // Retrieve the token from session storage
+    const token = sessionStorage.getItem('jwtToken');
 
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`); // Set the Authorization header
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.put(`http://localhost:5076/api/User/${userId}`, this.selectedUser, { headers })
       .subscribe(response => {

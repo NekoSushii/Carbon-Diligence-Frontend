@@ -1,9 +1,8 @@
-<!-- auth-callback.component.html -->
-
 <div *ngIf="user">
-  <!-- <h1>Welcome, {{ user.name }}!</h1>
-  <p>Your access token: {{ user.access_token }}</p> -->
-  <!-- <button (click)="logout()">Logout</button> -->
+</div>
+<div *ngIf="loading">
+  <!-- Add your loading indicator here, e.g., spinner or message -->
+  <p>Loading...</p>
 </div>
 
 <div *ngIf="!user">

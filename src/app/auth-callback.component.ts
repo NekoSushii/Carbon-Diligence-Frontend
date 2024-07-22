@@ -12,6 +12,8 @@ import Utf8 from 'crypto-js/enc-utf8';
   styleUrls: ['./auth-callback.component.css']
 })
 export class AuthCallbackComponent implements OnInit {
+  loading: boolean = false;
+
   constructor(private authService: AuthService, private router: Router, private http: HttpClient) {}
 
   async ngOnInit() {
@@ -30,6 +32,7 @@ export class AuthCallbackComponent implements OnInit {
       const encryptedToken = AES.encrypt(message, key, {iv: iv}).toString();
 
       try {
+        this.loading = true;
         const quotedToken = `"${encryptedToken}"`;
         const headers = { 'Content-Type': 'application/json' };
         const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/Login/Authenticate', quotedToken, { headers }));
@@ -39,9 +42,11 @@ export class AuthCallbackComponent implements OnInit {
         } else {
             console.error('Invalid response received from the server.');
         }
-    } catch (error) {
+      } catch (error) {
         console.error('Error sending token to backend:', error);
-    }
+      } finally {
+        this.loading = false;
+      }
 
     } else {
       console.error('Token is null. Unable to send token to backend.');

@@ -23,16 +23,16 @@ import { Observable } from 'rxjs';
         display: flex;
         flex-direction: column;
         height: 100vh;
-        overflow: hidden; /* Ensure no overflow */
+        overflow: hidden;
       }
       main.content {
         flex: 1;
-        overflow: auto; /* Allow content to scroll if necessary */
+        overflow: auto;
         padding: 20px;
         display: flex;
         flex-direction: column;
-        justify-content: center; /* Center content vertically */
-        align-items: center; /* Center content horizontally */
+        justify-content: center;
+        align-items: center;
       }
     `
   ]
@@ -46,6 +46,6 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Any additional initialization logic can go here
+    // Additional initialization logic
   }
 }
