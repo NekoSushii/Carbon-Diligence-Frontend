@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { AdminService } from './admin.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { LoadingService } from '../loading/loading.service';
 
 @Component({
   selector: 'app-admin',
@@ -16,12 +17,13 @@ export class AdminComponent implements OnInit {
   selectedUser: { email: string, name: string, roles: string, id: string } = { email: '', name: '', roles: '', id: this.usersData.length > 0 ? this.usersData[0].id : '' };
   loading: boolean = true;
 
-  constructor(private adminService: AdminService, private http: HttpClient) {}
+  constructor(private adminService: AdminService, private http: HttpClient, private loadingService: LoadingService) {}
 
   ngOnInit() {
+    this.loadingService.show();
     this.adminService.getUsersData().subscribe(data => {
       this.usersData = data;
-      this.loading = false;
+      this.loadingService.hide();
     });
   }
 
@@ -45,17 +47,21 @@ export class AdminComponent implements OnInit {
   }
 
   saveChanges() {
+    this.loadingService.show();
+
     // TODO: add in validation checks
     const userId = this.selectedUser.id;
     const token = sessionStorage.getItem('jwtToken');
-
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    console.log(this.selectedUser);
 
-    this.http.put(`http://localhost:5076/api/User/${userId}`, this.selectedUser, { headers })
+    this.http.put(`http://localhost:5076/api/User/UpdateUser/${this.selectedUser.id}`, this.selectedUser, { headers })
       .subscribe(response => {
         console.log('Put request successful:', response);
+        this.loadingService.hide();
       }, error => {
         console.error('Error in Put request for .../api/User/update-user:', error);
+        this.loadingService.hide();
       });
   }
 }

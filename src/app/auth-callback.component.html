@@ -1,10 +1,5 @@
 <div *ngIf="user">
 </div>
-<div *ngIf="loading">
-  <!-- Add your loading indicator here, e.g., spinner or message -->
-  <p>Loading...</p>
-</div>
-
-<div *ngIf="!user">
+<div *ngIf="!user && !loading">
   <h1>Loading...</h1>
 </div>

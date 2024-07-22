@@ -7,6 +7,7 @@ import { AppComponent } from './app/app.component';
 import { AuthInterceptor } from './app/auth.interceptor';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -17,6 +18,6 @@ bootstrapApplication(AppComponent, {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }
+    }, provideAnimationsAsync()
   ]
 }).catch(err => console.error(err));
