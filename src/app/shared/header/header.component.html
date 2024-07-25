@@ -1,12 +1,9 @@
-<!-- In the HeaderComponent template file (e.g., src\app\shared\header\header.component.html) -->
-
-<header>
-  <h1>My App</h1>
-  <nav>
-    <ul>
-      <li><a routerLink="/">Home</a></li>
-      <li><a routerLink="/admin">Admin</a></li>
-      <li><button (click)="logout()">Logout</button></li> <!-- Add the logout button -->
-    </ul>
-  </nav>
-</header>
+<mat-toolbar color="primary">
+  <span class="header-item"><a class="header-text" routerLink="/home">GREENTECH HUB</a></span>
+  <span class="header-item"><a class="header-text" routerLink="/admin">Admin</a></span>
+  <span class="spacer"></span>
+  <span class="header-item">
+    <mat-icon>search</mat-icon>
+  </span>
+  <span class="header-item"><a class="header-text" routerLink="/logout()">Logout</a></span>
+</mat-toolbar>

@@ -1,6 +1,25 @@
-.banner {
-  background-color: #333; /* Example background color */
-  color: #fff; /* Example text color */
-  padding: 20px;
-  text-align: center;
+:host {
+  display: block;
+}
+
+.mat-toolbar {
+  background-color: darkblue; /* Dark background color */
+  color: white; /* Light text color */
+}
+
+.mat-icon {
+  font-size: 1.5rem; /* Larger icon size */
+  margin-right: 8px; /* Margin between icon and text */
+}
+
+.header-item {
+  margin:5px;
+}
+
+.header-text {
+  color: white;
+}
+
+.header-text:hover {
+  color: grey;
 }

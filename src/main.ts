@@ -4,7 +4,7 @@ import { provideHttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { provideRouter } from '@angular/router';
 import { routes } from './app/app-routing.module';
 import { AppComponent } from './app/app.component';
-import { AuthInterceptor } from './app/auth.interceptor';
+import { AuthInterceptor } from './app/auth/auth.interceptor';
 import { BrowserModule } from '@angular/platform-browser';
 import { HttpClientModule } from '@angular/common/http';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
@@ -18,6 +18,6 @@ bootstrapApplication(AppComponent, {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
       multi: true
-    }, provideAnimationsAsync()
+    }, provideAnimationsAsync(), provideAnimationsAsync()
   ]
 }).catch(err => console.error(err));

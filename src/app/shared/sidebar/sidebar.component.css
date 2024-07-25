@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  align-items: flex-start;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  width: 20%;
+  height: 100vh;
+  float: left;
+  background-color: #f8f9fa;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.main-content {
+  flex-grow: 1;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+mat-checkbox {
+  display: block;
+  margin-bottom: 8px;
+}

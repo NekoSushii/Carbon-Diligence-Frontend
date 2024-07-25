@@ -1,7 +1,39 @@
-h1 {
-  color: #2c3e50;
+.content-grid {
+  width: 100%; /* Ensure the grid takes up the full width of the content container */
+  height: 100%; /* Ensure the grid takes up the full height of the content container */
 }
 
-p {
-  font-size: 1.2em;
+mat-card {
+  margin: 8px;
+  width: 100%; /* Full width of the grid tile */
+  height: 100%; /* Full height of the grid tile */
+}
+
+.card-content {
+  height: 136px; /* Fixed height for card content to fit within the card */
+  overflow: hidden;
+}
+
+mat-card-content .truncate {
+  display: -webkit-box; /* Use -webkit-box for multi-line truncation */
+  -webkit-box-orient: vertical; /* Set box orientation to vertical */
+  -webkit-line-clamp: 3; /* Number of lines to show before truncating */
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipsis */
+}
+
+mat-grid-tile {
+  padding: 0;
+  /* Remove default padding from grid tiles */
+}
+
+@media (max-width: 599px) {
+  mat-grid-list {
+    grid-template-columns: 1fr !important;
+    /* Single column layout for small screens */
+  }
+
+  mat-card {
+    max-width: calc(100% - 32px); /* Adjust card width for small screens */
+  }
 }

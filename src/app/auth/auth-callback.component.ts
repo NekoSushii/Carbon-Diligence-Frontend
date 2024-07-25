@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
-import { LoadingService } from './loading/loading.service';
+import { LoadingService } from '../loading/loading.service';
 import { lastValueFrom } from 'rxjs';
 import * as AES from 'crypto-js/aes';
 import * as Utf8 from 'crypto-js/enc-utf8';
