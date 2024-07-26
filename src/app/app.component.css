@@ -1,6 +1,6 @@
 :root {
   --header-footer-height: 100px; /* Adjust this value as needed */
-  --main-container-height: calc(100vh - 2 * var(--header-footer-height));
+  /* --main-container-height: calc(75vh); */
 }
 
 body, html {
@@ -31,4 +31,5 @@ app-sidebar {
   box-sizing: border-box;
   overflow-y: auto;
   position: relative;
+  height: 100%; /* Ensure content container takes full height of main container */
 }

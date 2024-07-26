@@ -1,6 +1,12 @@
+:root {
+  --dynamic-font-size: 1rem; /* Default value */
+  --card-size: 200px; /* Default card size */
+}
+
 .content-grid {
   width: 100%; /* Ensure the grid takes up the full width of the content container */
-  height: 100%; /* Ensure the grid takes up the full height of the content container */
+  /* height: 75vh; */
+  margin: 0 auto; /* Center the grid */
 }
 
 mat-card {
@@ -10,7 +16,7 @@ mat-card {
 }
 
 .card-content {
-  height: 136px; /* Fixed height for card content to fit within the card */
+  height: calc(100% - 64px); /* Adjust content height considering header and padding */
   overflow: hidden;
 }
 
