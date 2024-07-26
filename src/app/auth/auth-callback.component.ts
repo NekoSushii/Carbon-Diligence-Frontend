@@ -23,6 +23,13 @@ export class AuthCallbackComponent implements OnInit {
 
   async ngOnInit() {
     await this.authService.completeAuthentication();
+    const token = this.authService.getAccessToken();
+
+    if (!token) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.loadingService.show();
     await this.sendTokenToBackend();
     this.router.navigate(['/home']);
@@ -30,7 +37,6 @@ export class AuthCallbackComponent implements OnInit {
   }
 
   async sendTokenToBackend() {
-
     const token = this.authService.getAccessToken();
 
     if (token) {

@@ -24,3 +24,7 @@
 .header-text:hover {
   color: grey;
 }
+
+.header-text:hover {
+  cursor: pointer;
+}

@@ -1,9 +1,14 @@
 <mat-toolbar color="primary">
-  <span class="header-item"><a class="header-text" routerLink="/home">GREENTECH HUB</a></span>
-  <span class="header-item"><a class="header-text" routerLink="/admin">Admin</a></span>
-  <span class="spacer"></span>
   <span class="header-item">
-    <mat-icon>search</mat-icon>
+    <a class="header-text" routerLink="/home">GREENTECH HUB</a>
   </span>
-  <span class="header-item"><a class="header-text" routerLink="/logout()">Logout</a></span>
+  <ng-container *ngIf="isLoggedIn()">
+    <span class="header-item">
+      <a class="header-text" routerLink="/admin">Admin</a>
+    </span>
+    <span class="spacer"></span>
+    <span class="header-item">
+      <a class="header-text" (click)="logout()">Logout</a>
+    </span>
+  </ng-container>
 </mat-toolbar>

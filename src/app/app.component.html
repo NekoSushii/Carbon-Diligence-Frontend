@@ -1,7 +1,9 @@
 <div appDisableInteraction>
   <app-header></app-header>
   <div class="main-container">
-    <app-sidebar></app-sidebar>
+    <ng-container *ngIf="showSidebar">
+      <app-sidebar></app-sidebar>
+    </ng-container>
     <div class="content-container">
       <router-outlet></router-outlet>
     </div>
