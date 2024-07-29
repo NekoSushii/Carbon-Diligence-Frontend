@@ -5,31 +5,40 @@
 <table mat-table [dataSource]="usersData" class="mat-elevation-z8">
   <ng-container matColumnDef="email">
     <th mat-header-cell *matHeaderCellDef> Email </th>
-    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}"> {{ user.email }} </td>
+    <td mat-cell *matCellDef="let user"> {{ user.email }} </td>
   </ng-container>
 
   <ng-container matColumnDef="name">
     <th mat-header-cell *matHeaderCellDef> Name </th>
-    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}"> {{ user.name }} </td>
+    <td mat-cell *matCellDef="let user"> {{ user.name }} </td>
   </ng-container>
 
   <ng-container matColumnDef="roles">
     <th mat-header-cell *matHeaderCellDef> Roles </th>
-    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}">
+    <td mat-cell *matCellDef="let user">
       <span *ngFor="let role of user.roles; let last = last">
         {{ role.name }}<span *ngIf="!last">, </span>
       </span>
     </td>
   </ng-container>
 
+  <ng-container matColumnDef="userGroups">
+    <th mat-header-cell *matHeaderCellDef> User Group </th>
+    <td mat-cell *matCellDef="let user">
+      <span *ngFor="let group of user.userGroups; let last = last">
+        {{ group.name }}<span *ngIf="!last">, </span>
+      </span>
+    </td>
+  </ng-container>
+
   <ng-container matColumnDef="isActive">
     <th mat-header-cell *matHeaderCellDef> Active Status </th>
-    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}"> {{ user.isActive ? 'Active' : 'Inactive' }} </td>
+    <td mat-cell *matCellDef="let user"> {{ user.isActive ? 'Active' : 'Inactive' }} </td>
   </ng-container>
 
   <ng-container matColumnDef="action">
     <th mat-header-cell *matHeaderCellDef> Action </th>
-    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}">
+    <td mat-cell *matCellDef="let user">
       <button mat-button (click)="openModal(user)">Edit</button>
       <button mat-icon-button color="warn" (click)="user.isActive ? confirmDelete(user) : confirmUndelete(user)">
         <mat-icon>{{ user.isActive ? 'delete' : 'restore' }}</mat-icon>
@@ -38,5 +47,5 @@
   </ng-container>
 
   <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'inactive-row': !row.isActive}"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>

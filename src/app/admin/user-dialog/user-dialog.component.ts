@@ -7,12 +7,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { RolesResourcesDto, UserDataDto } from '../admin.component';
+import { RolesResourcesDto, UserDataDto, UserGroupDto } from '../admin.component';
 
 export interface DialogData {
   user: UserDataDto;
   rolesData: RolesResourcesDto[];
   selectedRoles: string[];
+  userGroupsData: UserGroupDto[];
+  selectedUserGroups: string[];
 }
 
 @Component({

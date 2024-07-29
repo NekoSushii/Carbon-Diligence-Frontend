@@ -22,6 +22,7 @@ export interface UserDataDto {
   name: string;
   roles: RolesResourcesDto[];
   isActive: boolean;
+  userGroups: UserGroupDto[];  // Updated userGroups property
 }
 
 export interface RolesResourcesDto {
@@ -33,6 +34,19 @@ export interface RolesResourcesDto {
     description: string;
     status: string;
   }[];
+}
+
+export interface UserGroupDto {
+  id: string;
+  name: string;
+  description: string;
+  applications: ApplicationDto;
+}
+
+export interface ApplicationDto {
+  name: string;
+  description: string;
+  isActive: boolean;
 }
 
 @Component({
@@ -57,10 +71,12 @@ export interface RolesResourcesDto {
 export class AdminComponent implements OnInit {
   usersData: UserDataDto[] = [];
   rolesData: RolesResourcesDto[] = [];
-  selectedUser: UserDataDto = { id: '', email: '', name: '', roles: [], isActive: true };
+  userGroupsData: UserGroupDto[] = [];
+  selectedUser: UserDataDto = { id: '', email: '', name: '', roles: [], isActive: true, userGroups: [] };
   selectedRoles: string[] = [];
+  selectedUserGroups: string[] = [];
   loading: boolean = true;
-  displayedColumns: string[] = ['email', 'name', 'roles', 'isActive', 'action'];
+  displayedColumns: string[] = ['email', 'name', 'roles', 'userGroups', 'isActive', 'action'];
 
   constructor(
     private adminService: AdminService,
@@ -85,20 +101,26 @@ export class AdminComponent implements OnInit {
       console.log(data);
       this.rolesData = data;
     });
+    this.adminService.getUserGroup().subscribe((data) => {
+      console.log(data);
+      this.userGroupsData = data;
+    });
   }
 
   openModal(user: UserDataDto) {
     this.selectedUser = { ...user };
     this.selectedRoles = user.roles.map((role) => role.id);
+    this.selectedUserGroups = user.userGroups.map((group) => group.id);
     const dialogRef = this.dialog.open(UserDialogComponent, {
       width: '250px',
-      data: { user: this.selectedUser, rolesData: this.rolesData, selectedRoles: this.selectedRoles },
+      data: { user: this.selectedUser, rolesData: this.rolesData, selectedRoles: this.selectedRoles, userGroupsData: this.userGroupsData, selectedUserGroups: this.selectedUserGroups },
     });
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.selectedUser = result.user;
         this.selectedRoles = result.selectedRoles;
+        this.selectedUserGroups = result.selectedUserGroups;
         this.saveChanges();
       }
     });
@@ -107,6 +129,7 @@ export class AdminComponent implements OnInit {
   saveChanges() {
     this.loadingService.show();
 
+    // Map the selectedRoles array back to the roles array without resources
     const rolesWithoutResources = this.selectedRoles.map((roleId) => {
       const role = this.rolesData.find((r) => r.id === roleId);
       if (role) {
@@ -116,20 +139,31 @@ export class AdminComponent implements OnInit {
       return null;
     }).filter(role => role !== null);
 
+    // Map the selectedUserGroups array back to the userGroups array without applications
+    const userGroupsWithoutApplications = this.selectedUserGroups.map((groupId) => {
+      const group = this.userGroupsData.find((g) => g.id === groupId);
+      if (group) {
+        const { applications, ...rest } = group;
+        return rest;
+      }
+      return null;
+    }).filter(group => group !== null);
+
     const updatedUser = {
       ...this.selectedUser,
-      roles: rolesWithoutResources
+      roles: rolesWithoutResources,
+      userGroups: userGroupsWithoutApplications
     };
 
     const userId = this.selectedUser.id;
-    const token = this.cookieService.get('jwtToken');
+    const token = this.cookieService.get('jwtToken'); // Get token from cookies
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     console.log(updatedUser);
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
       (response) => {
         console.log('Put request successful:', response);
-        this.loadData();
+        this.loadData(); // Reload data after successful update
         this.loadingService.hide();
       },
       (error) => {
@@ -174,13 +208,13 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const token = this.cookieService.get('jwtToken');
+    const token = this.cookieService.get('jwtToken'); // Get token from cookies
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
       (response) => {
         console.log('User deactivated successfully:', response);
-        this.loadData();
+        this.loadData(); // Reload data after successful deactivation
         this.loadingService.hide();
       },
       (error) => {
@@ -199,13 +233,13 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const token = this.cookieService.get('jwtToken');
+    const token = this.cookieService.get('jwtToken'); // Get token from cookies
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
       (response) => {
         console.log('User reactivated successfully:', response);
-        this.loadData();
+        this.loadData(); // Reload data after successful reactivation
         this.loadingService.hide();
       },
       (error) => {
