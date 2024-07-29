@@ -18,13 +18,16 @@ export class AdminService {
     });
 
     return this.http.get<UserDataDto[]>(`${this.apiUrl}/User/GetUsers`, { headers });
-    // return this.http.get<UserDataDto[]>(`http://localhost:5206/api/User/GetUsers`, { headers });
 
   }
 
   getRoles(): Observable<RolesResourcesDto[]> {
-    return this.http.get<RolesResourcesDto[]>(`${this.apiUrl}/UserManagement/GetRoles`);
-    // return this.http.get<RolesResourcesDto[]>(`http://localhost:5206/api/UserManagement/GetRoles`);
+    const token = sessionStorage.getItem('jwtToken');
+    const headers = new HttpHeaders({
+      'Authorization': `Bearer ${token}`
+    });
+
+    return this.http.get<RolesResourcesDto[]>(`${this.apiUrl}/UserManagement/GetRoles`, {headers});
 
   }
 }

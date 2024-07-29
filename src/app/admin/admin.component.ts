@@ -27,7 +27,7 @@ export interface RolesResourcesDto {
   id: string;
   name: string;
   description: string;
-  resourcesDtos: {
+  resources: {
     name: string;
     description: string;
     status: string;
@@ -109,7 +109,7 @@ export class AdminComponent implements OnInit {
     const rolesWithoutResources = this.selectedRoles.map((roleId) => {
       const role = this.rolesData.find((r) => r.id === roleId);
       if (role) {
-        const { resourcesDtos, ...rest } = role;
+        const { resources, ...rest } = role;
         return rest;
       }
       return null;
