@@ -14,13 +14,11 @@ export class AdminService {
 
   getUsersData(): Observable<UserDataDto[]> {
     const token = this.cookieService.get('jwtToken');
-    console.log(token);
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
 
     return this.http.get<UserDataDto[]>(`${this.apiUrl}/User/GetUsers`, { headers });
-
   }
 
   getRoles(): Observable<RolesResourcesDto[]> {

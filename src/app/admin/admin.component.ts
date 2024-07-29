@@ -93,16 +93,13 @@ export class AdminComponent implements OnInit {
   loadData() {
     this.loadingService.show();
     this.adminService.getUsersData().subscribe((data) => {
-      console.log(data);
       this.usersData = data;
       this.loadingService.hide();
     });
     this.adminService.getRoles().subscribe((data) => {
-      console.log(data);
       this.rolesData = data;
     });
     this.adminService.getUserGroup().subscribe((data) => {
-      console.log(data);
       this.userGroupsData = data;
     });
   }
