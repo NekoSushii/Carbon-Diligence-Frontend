@@ -1,20 +1,30 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { UserDataDto, RolesResourcesDto } from './admin.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AdminService {
+  private apiUrl = 'http://localhost:5206/api';
 
   constructor(private http: HttpClient) {}
 
-  getUsersData(): Observable<{ email: string, name: string, roles: string, id: string }[]> {
+  getUsersData(): Observable<UserDataDto[]> {
     const token = sessionStorage.getItem('jwtToken');
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.get<{ email: string, name: string, roles: string, id: string }[]>("http://localhost:5076/api/User/GetUsers", { headers });
+    return this.http.get<UserDataDto[]>(`${this.apiUrl}/User/GetUsers`, { headers });
+    // return this.http.get<UserDataDto[]>(`http://localhost:5206/api/User/GetUsers`, { headers });
+
+  }
+
+  getRoles(): Observable<RolesResourcesDto[]> {
+    return this.http.get<RolesResourcesDto[]>(`${this.apiUrl}/UserManagement/GetRoles`);
+    // return this.http.get<RolesResourcesDto[]>(`http://localhost:5206/api/UserManagement/GetRoles`);
+
   }
 }

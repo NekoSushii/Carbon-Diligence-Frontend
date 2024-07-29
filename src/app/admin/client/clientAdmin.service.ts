@@ -15,6 +15,6 @@ export class AdminService {
       'Authorization': `Bearer ${token}`
     });
 
-    return this.http.get<{ email: string, name: string, roles: string, id: string }[]>("http://localhost:5076/api/User/GetUsers", { headers });
+    return this.http.get<{ email: string, name: string, roles: string, id: string }[]>("http://localhost:5206/api/User/GetUsers", { headers });
   }
 }

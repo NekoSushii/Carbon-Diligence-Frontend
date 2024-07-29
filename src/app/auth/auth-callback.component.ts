@@ -4,13 +4,16 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from './auth.service';
 import { LoadingService } from '../loading/loading.service';
+import { CommonModule } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
 import * as AES from 'crypto-js/aes';
 import * as Utf8 from 'crypto-js/enc-utf8';
 
 @Component({
+  // standalone: true,
   selector: 'app-auth-callback',
-  templateUrl: './auth-callback.component.html'
+  templateUrl: './auth-callback.component.html',
+  // imports: [CommonModule],
 })
 export class AuthCallbackComponent implements OnInit {
 
@@ -48,7 +51,7 @@ export class AuthCallbackComponent implements OnInit {
       try {
         const quotedToken = `"${encryptedToken}"`;
         const headers = { 'Content-Type': 'application/json' };
-        const response: any = await lastValueFrom(this.http.post('http://localhost:5076/api/Login/Authenticate', quotedToken, { headers }));
+        const response: any = await lastValueFrom(this.http.post('http://localhost:5206/api/Login/Authenticate', quotedToken, { headers }));
 
         if (response) {
           sessionStorage.setItem('jwtToken', response.jwtToken);

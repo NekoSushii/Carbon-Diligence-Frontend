@@ -2,33 +2,41 @@
   <p>Loading...</p>
 </div>
 
-<table *ngIf="usersData.length > 0">
-  <tr>
-    <th>Email</th>
-    <th>Name</th>
-    <th>Roles</th>
-    <th>Action</th>
-  </tr>
-  <tr *ngFor="let user of usersData">
-    <td>{{ user.email }}</td>
-    <td>{{ user.name }}</td>
-    <td>{{ user.roles }}</td>
-    <td>
-      <button (click)="openModal(user)">Edit</button>
-    </td>
-  </tr>
-</table>
+<table mat-table [dataSource]="usersData" class="mat-elevation-z8">
+  <ng-container matColumnDef="email">
+    <th mat-header-cell *matHeaderCellDef> Email </th>
+    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}"> {{ user.email }} </td>
+  </ng-container>
 
-<div id="myModal" class="modal">
-  <div class="modal-content">
-    <span class="close" (click)="closeModal()">&times;</span>
-    <h2>Edit User</h2>
-    <label>Email:</label>
-    <input type="text" [value]="selectedUser.email" placeholder="{{selectedUser.email}}" (input)="selectedUser.email = ($any($event.target).value)">
-    <label>Name:</label>
-    <input type="text" [value]="selectedUser.name" placeholder="{{selectedUser.name}}" (input)="selectedUser.name = ($any($event.target).value)">
-    <label>Roles:</label>
-    <input type="text" [value]="selectedUser.roles" placeholder="{{selectedUser.roles}}" (input)="selectedUser.roles = ($any($event.target).value)">
-    <button (click)="saveChanges()">Save Changes</button>
-  </div>
-</div>
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef> Name </th>
+    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}"> {{ user.name }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="roles">
+    <th mat-header-cell *matHeaderCellDef> Roles </th>
+    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}">
+      <span *ngFor="let role of user.roles; let last = last">
+        {{ role.name }}<span *ngIf="!last">, </span>
+      </span>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="isActive">
+    <th mat-header-cell *matHeaderCellDef> Active Status </th>
+    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}"> {{ user.isActive ? 'Active' : 'Inactive' }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="action">
+    <th mat-header-cell *matHeaderCellDef> Action </th>
+    <td mat-cell *matCellDef="let user" [ngClass]="{'inactive-row': !user.isActive}">
+      <button mat-button (click)="openModal(user)">Edit</button>
+      <button mat-icon-button color="warn" (click)="user.isActive ? confirmDelete(user) : confirmUndelete(user)">
+        <mat-icon>{{ user.isActive ? 'delete' : 'restore' }}</mat-icon>
+      </button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;" [ngClass]="{'inactive-row': !row.isActive}"></tr>
+</table>

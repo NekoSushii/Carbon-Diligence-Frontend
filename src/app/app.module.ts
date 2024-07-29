@@ -12,11 +12,13 @@ import { DisableInteractionDirective } from './shared/disable-interaction.direct
 import { LoadingService } from './loading/loading.service';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
 import { HomeComponent } from './home/home.component';
+import { CommonModule } from '@angular/common';
 
 @NgModule({
   imports: [
     BrowserModule,
     HttpClientModule,
+    CommonModule,
     HomeComponent,
     FooterComponent,
     HeaderComponent,

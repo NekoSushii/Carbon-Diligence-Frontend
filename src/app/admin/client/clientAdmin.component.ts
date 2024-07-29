@@ -55,7 +55,7 @@ export class AdminComponent implements OnInit {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     console.log(this.selectedUser);
 
-    this.http.put(`http://localhost:5076/api/User/UpdateUser/${this.selectedUser.id}`, this.selectedUser, { headers })
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${this.selectedUser.id}`, this.selectedUser, { headers })
       .subscribe(response => {
         console.log('Put request successful:', response);
         this.loadingService.hide();
