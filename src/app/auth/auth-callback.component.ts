@@ -6,6 +6,7 @@ import { AuthService } from './auth.service';
 import { LoadingService } from '../loading/loading.service';
 import { CommonModule } from '@angular/common';
 import { lastValueFrom } from 'rxjs';
+import { CookieService } from 'ngx-cookie-service';
 import { jwtDecode } from 'jwt-decode';
 import * as AES from 'crypto-js/aes';
 import * as Utf8 from 'crypto-js/enc-utf8';
@@ -22,7 +23,8 @@ export class AuthCallbackComponent implements OnInit {
     private authService: AuthService,
     private router: Router,
     private http: HttpClient,
-    private loadingService: LoadingService
+    private loadingService: LoadingService,
+    private cookieService: CookieService
   ) {}
 
   async ngOnInit() {
@@ -55,7 +57,7 @@ export class AuthCallbackComponent implements OnInit {
         const response: any = await lastValueFrom(this.http.post('http://localhost:5206/api/Login/Authenticate', quotedToken, { headers }));
 
         if (response && response.jwtToken) {
-          sessionStorage.setItem('jwtToken', response.jwtToken);
+          this.cookieService.set('jwtToken', response.jwtToken, { secure: true, sameSite: 'Strict' });
 
           const decodedToken: any = jwtDecode(response.jwtToken);
 
@@ -66,7 +68,6 @@ export class AuthCallbackComponent implements OnInit {
           };
 
           sessionStorage.setItem('user', JSON.stringify(user));
-
         } else {
           console.error('Invalid response received from the server.');
         }
@@ -74,7 +75,6 @@ export class AuthCallbackComponent implements OnInit {
         console.error('Error sending token to backend:', error);
       } finally {
       }
-
     } else {
       console.error('Token is null. Unable to send token to backend.');
     }

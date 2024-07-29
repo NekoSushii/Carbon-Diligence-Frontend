@@ -13,6 +13,7 @@ import { LoadingService } from './loading/loading.service';
 import { SidebarComponent } from './shared/sidebar/sidebar.component';
 import { HomeComponent } from './home/home.component';
 import { CommonModule } from '@angular/common';
+import { CookieService } from 'ngx-cookie-service';
 
 @NgModule({
   imports: [
@@ -33,7 +34,8 @@ import { CommonModule } from '@angular/common';
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     AdminService,
-    LoadingService
+    LoadingService,
+    CookieService
   ],
   bootstrap: [LoadingComponent]
 })

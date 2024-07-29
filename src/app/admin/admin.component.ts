@@ -14,6 +14,7 @@ import { LoadingService } from '../loading/loading.service';
 import { FormsModule } from '@angular/forms';
 import { ConfirmDialogComponent, ConfirmDialogData } from './confirm-dialog/confirm-dialog.component';
 import { UserDialogComponent } from './user-dialog/user-dialog.component';
+import { CookieService } from 'ngx-cookie-service';
 
 export interface UserDataDto {
   id: string;
@@ -65,6 +66,7 @@ export class AdminComponent implements OnInit {
     private adminService: AdminService,
     private http: HttpClient,
     private loadingService: LoadingService,
+    private cookieService: CookieService,
     public dialog: MatDialog
   ) {}
 
@@ -105,7 +107,6 @@ export class AdminComponent implements OnInit {
   saveChanges() {
     this.loadingService.show();
 
-    // Map the selectedRoles array back to the roles array without resourcesDtos
     const rolesWithoutResources = this.selectedRoles.map((roleId) => {
       const role = this.rolesData.find((r) => r.id === roleId);
       if (role) {
@@ -121,14 +122,14 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = this.selectedUser.id;
-    const token = sessionStorage.getItem('jwtToken');
+    const token = this.cookieService.get('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     console.log(updatedUser);
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
       (response) => {
         console.log('Put request successful:', response);
-        this.loadData(); // Reload data after successful update
+        this.loadData();
         this.loadingService.hide();
       },
       (error) => {
@@ -173,13 +174,13 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const token = sessionStorage.getItem('jwtToken');
+    const token = this.cookieService.get('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
       (response) => {
         console.log('User deactivated successfully:', response);
-        this.loadData(); // Reload data after successful deactivation
+        this.loadData();
         this.loadingService.hide();
       },
       (error) => {
@@ -198,13 +199,13 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const token = sessionStorage.getItem('jwtToken');
+    const token = this.cookieService.get('jwtToken');
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
       (response) => {
         console.log('User reactivated successfully:', response);
-        this.loadData(); // Reload data after successful reactivation
+        this.loadData();
         this.loadingService.hide();
       },
       (error) => {

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { UserDataDto, RolesResourcesDto } from './admin.component';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,10 +10,11 @@ import { UserDataDto, RolesResourcesDto } from './admin.component';
 export class AdminService {
   private apiUrl = 'http://localhost:5206/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cookieService: CookieService,) {}
 
   getUsersData(): Observable<UserDataDto[]> {
-    const token = sessionStorage.getItem('jwtToken');
+    const token = this.cookieService.get('jwtToken');
+    console.log(token);
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
@@ -22,7 +24,7 @@ export class AdminService {
   }
 
   getRoles(): Observable<RolesResourcesDto[]> {
-    const token = sessionStorage.getItem('jwtToken');
+    const token = this.cookieService.get('jwtToken');
     const headers = new HttpHeaders({
       'Authorization': `Bearer ${token}`
     });
