@@ -1,20 +1,19 @@
-import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http'; // Import HttpHeaders here
+import { Component, OnInit } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { AdminService } from './admin.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { RouterModule } from '@angular/router';
 import { LoadingService } from '../loading/loading.service';
-import { FormsModule } from '@angular/forms';
-import { ConfirmDialogComponent, ConfirmDialogData } from './confirm-dialog/confirm-dialog.component';
-import { UserDialogComponent } from './user-dialog/user-dialog.component';
-import { CookieService } from 'ngx-cookie-service';
+import { AdminService } from './admin.service';
+import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { DialogData, UserDialogComponent } from './user-dialog/user-dialog.component';
 
 export interface UserDataDto {
   id: string;
@@ -22,7 +21,7 @@ export interface UserDataDto {
   name: string;
   roles: RolesResourcesDto[];
   isActive: boolean;
-  userGroups: UserGroupDto[];  // Updated userGroups property
+  userGroups: UserGroupDto[];
 }
 
 export interface RolesResourcesDto {
@@ -66,6 +65,7 @@ export interface ApplicationDto {
     MatTableModule,
     MatIconModule,
     ConfirmDialogComponent,
+    UserDialogComponent,
   ],
 })
 export class AdminComponent implements OnInit {
@@ -82,7 +82,6 @@ export class AdminComponent implements OnInit {
     private adminService: AdminService,
     private http: HttpClient,
     private loadingService: LoadingService,
-    private cookieService: CookieService,
     public dialog: MatDialog
   ) {}
 
@@ -93,13 +92,16 @@ export class AdminComponent implements OnInit {
   loadData() {
     this.loadingService.show();
     this.adminService.getUsersData().subscribe((data) => {
+      console.log(data);
       this.usersData = data;
       this.loadingService.hide();
     });
     this.adminService.getRoles().subscribe((data) => {
+      console.log(data);
       this.rolesData = data;
     });
     this.adminService.getUserGroup().subscribe((data) => {
+      console.log(data);
       this.userGroupsData = data;
     });
   }
@@ -110,7 +112,13 @@ export class AdminComponent implements OnInit {
     this.selectedUserGroups = user.userGroups.map((group) => group.id);
     const dialogRef = this.dialog.open(UserDialogComponent, {
       width: '250px',
-      data: { user: this.selectedUser, rolesData: this.rolesData, selectedRoles: this.selectedRoles, userGroupsData: this.userGroupsData, selectedUserGroups: this.selectedUserGroups },
+      data: {
+        user: this.selectedUser,
+        rolesData: this.rolesData,
+        selectedRoles: this.selectedRoles,
+        userGroupsData: this.userGroupsData,
+        selectedUserGroups: this.selectedUserGroups,
+      } as DialogData,
     });
 
     dialogRef.afterClosed().subscribe((result) => {
@@ -153,11 +161,10 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = this.selectedUser.id;
-    const token = this.cookieService.get('jwtToken'); // Get token from cookies
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders(); // No need to set Authorization header explicitly
     console.log(updatedUser);
 
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe(
       (response) => {
         console.log('Put request successful:', response);
         this.loadData(); // Reload data after successful update
@@ -205,10 +212,9 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const token = this.cookieService.get('jwtToken'); // Get token from cookies
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders(); // No need to set Authorization header explicitly
 
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe(
       (response) => {
         console.log('User deactivated successfully:', response);
         this.loadData(); // Reload data after successful deactivation
@@ -230,10 +236,9 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const token = this.cookieService.get('jwtToken'); // Get token from cookies
-    const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
+    const headers = new HttpHeaders(); // No need to set Authorization header explicitly
 
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers }).subscribe(
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe(
       (response) => {
         console.log('User reactivated successfully:', response);
         this.loadData(); // Reload data after successful reactivation

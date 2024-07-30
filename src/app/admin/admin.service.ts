@@ -1,8 +1,8 @@
-import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { UserDataDto, RolesResourcesDto, UserGroupDto } from './admin.component';
+import { Injectable } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
+import { Observable } from 'rxjs';
+import { RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
 
 @Injectable({
   providedIn: 'root'
