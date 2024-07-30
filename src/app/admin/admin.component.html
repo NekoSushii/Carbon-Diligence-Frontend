@@ -2,6 +2,9 @@
   <p>Loading...</p>
 </div>
 
+<button mat-raised-button color="primary" (click)="openRolesDialog()">Manage Roles</button>
+<button mat-raised-button color="primary" (click)="openUserGroupsDialog()">Manage User Groups</button>
+
 <table mat-table [dataSource]="usersData" class="mat-elevation-z8">
   <ng-container matColumnDef="email">
     <th mat-header-cell *matHeaderCellDef> Email </th>

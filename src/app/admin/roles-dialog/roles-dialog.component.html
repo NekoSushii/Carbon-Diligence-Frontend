@@ -1,0 +1,9 @@
+<h2>Manage Roles</h2>
+<mat-list>
+  <mat-list-item *ngFor="let role of data.roles">
+    {{ role.name }} - {{ role.description }}
+  </mat-list-item>
+</mat-list>
+<div mat-dialog-actions>
+  <button mat-button (click)="onClose()">Close</button>
+</div>

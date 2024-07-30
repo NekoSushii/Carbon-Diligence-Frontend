@@ -1,15 +1,11 @@
-// src/app/auth-callback.component.ts
+import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
-import { AuthService } from './auth.service';
-import { LoadingService } from '../loading/loading.service';
-import { CommonModule } from '@angular/common';
-import { lastValueFrom } from 'rxjs';
-import { CookieService } from 'ngx-cookie-service';
-import { jwtDecode } from 'jwt-decode';
 import * as AES from 'crypto-js/aes';
 import * as Utf8 from 'crypto-js/enc-utf8';
+import { lastValueFrom } from 'rxjs';
+import { LoadingService } from '../loading-screen/loading.service';
+import { AuthService } from './auth.service';
 
 @Component({
   // standalone: true,
@@ -24,7 +20,6 @@ export class AuthCallbackComponent implements OnInit {
     private router: Router,
     private http: HttpClient,
     private loadingService: LoadingService,
-    private cookieService: CookieService
   ) {}
 
   async ngOnInit() {
@@ -54,17 +49,14 @@ export class AuthCallbackComponent implements OnInit {
       try {
         const quotedToken = `"${encryptedToken}"`;
         const headers = { 'Content-Type': 'application/json' };
-        const response: any = await lastValueFrom(this.http.post('http://localhost:5206/api/Login/Authenticate', quotedToken, { headers }));
+        const response: any = await lastValueFrom(this.http.post('http://localhost:5206/api/Login/Authenticate', quotedToken, { headers, withCredentials: true }));
 
-        if (response && response.jwtToken) {
-          this.cookieService.set('jwtToken', response.jwtToken, { secure: true, sameSite: 'Strict' });
-
-          const decodedToken: any = jwtDecode(response.jwtToken);
-
+        if (response) {
           const user = {
-            name: decodedToken.name,
-            email: decodedToken.email,
-            roles: decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+            name: response.name,
+            email: response.email,
+            roles: response.roles,
+            userGroups: response.userGroups
           };
 
           sessionStorage.setItem('user', JSON.stringify(user));

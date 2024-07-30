@@ -1,19 +1,19 @@
-import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AuthInterceptor } from './auth/auth.interceptor';
-import { AdminService } from './admin/admin.service';
-import { HeaderComponent } from './shared/header/header.component';
-import { FooterComponent } from './shared/footer/footer.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { LoadingComponent } from './loading/loading.component';
-import { DisableInteractionDirective } from './shared/disable-interaction.directive';
-import { LoadingService } from './loading/loading.service';
-import { SidebarComponent } from './shared/sidebar/sidebar.component';
-import { HomeComponent } from './home/home.component';
 import { CommonModule } from '@angular/common';
+import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { NgModule } from '@angular/core';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CookieService } from 'ngx-cookie-service';
+import { AdminService } from './admin/admin.service';
+import { AuthInterceptor } from './auth/auth.interceptor';
+import { HomeComponent } from './home/home.component';
+import { LoadingScreenComponent } from './loading-screen/loading-screen.component';
+import { LoadingService } from './loading-screen/loading.service';
+import { SharedModule } from './shared.module';
+import { FooterComponent } from './shared/footer/footer.component';
+import { HeaderComponent } from './shared/header/header.component';
+import { SidebarComponent } from './shared/sidebar/sidebar.component';
 
 @NgModule({
   imports: [
@@ -26,10 +26,10 @@ import { CookieService } from 'ngx-cookie-service';
     SidebarComponent,
     MatProgressSpinnerModule,
     BrowserAnimationsModule,
+    LoadingScreenComponent,
+    SharedModule,
   ],
   declarations: [
-    LoadingComponent,
-    DisableInteractionDirective
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
@@ -37,6 +37,6 @@ import { CookieService } from 'ngx-cookie-service';
     LoadingService,
     CookieService
   ],
-  bootstrap: [LoadingComponent]
+  bootstrap: []
 })
 export class AppModule {}

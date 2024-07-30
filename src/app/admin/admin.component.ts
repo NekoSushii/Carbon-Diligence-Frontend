@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http'; // Import HttpHeaders here
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,10 +10,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
-import { LoadingService } from '../loading/loading.service';
+import { LoadingService } from '../loading-screen/loading.service';
 import { AdminService } from './admin.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import { RolesDialogComponent } from './roles-dialog/roles-dialog.component';
 import { DialogData, UserDialogComponent } from './user-dialog/user-dialog.component';
+import { UserGroupDialogComponent } from './user-group-dialog/user-group-dialog.component';
 
 export interface UserDataDto {
   id: string;
@@ -28,18 +30,20 @@ export interface RolesResourcesDto {
   id: string;
   name: string;
   description: string;
-  resources: {
-    name: string;
-    description: string;
-    status: string;
-  }[];
+  resources: ResourcesDto[];
+}
+
+export interface ResourcesDto {
+  name: string;
+  description: string;
+  status: string;
 }
 
 export interface UserGroupDto {
   id: string;
   name: string;
   description: string;
-  applications: ApplicationDto;
+  applications: ApplicationDto[];
 }
 
 export interface ApplicationDto {
@@ -72,6 +76,8 @@ export class AdminComponent implements OnInit {
   usersData: UserDataDto[] = [];
   rolesData: RolesResourcesDto[] = [];
   userGroupsData: UserGroupDto[] = [];
+  applicationsData: ApplicationDto[] = [];
+  resourcesData: ResourcesDto[] = [];
   selectedUser: UserDataDto = { id: '', email: '', name: '', roles: [], isActive: true, userGroups: [] };
   selectedRoles: string[] = [];
   selectedUserGroups: string[] = [];
@@ -91,18 +97,47 @@ export class AdminComponent implements OnInit {
 
   loadData() {
     this.loadingService.show();
-    this.adminService.getUsersData().subscribe((data) => {
-      console.log(data);
-      this.usersData = data;
-      this.loadingService.hide();
+    this.adminService.getUsersData().subscribe({
+      next: (data) => {
+        this.usersData = data;
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        console.error('Error loading user data:', error);
+        this.loadingService.hide();
+      }
     });
-    this.adminService.getRoles().subscribe((data) => {
-      console.log(data);
-      this.rolesData = data;
+    this.adminService.getRoles().subscribe({
+      next: (data) => {
+        this.rolesData = data;
+      },
+      error: (error) => {
+        console.error('Error loading roles data:', error);
+      }
     });
-    this.adminService.getUserGroup().subscribe((data) => {
-      console.log(data);
-      this.userGroupsData = data;
+    this.adminService.getUserGroups().subscribe({
+      next: (data) => {
+        this.userGroupsData = data;
+      },
+      error: (error) => {
+        console.error('Error loading user groups data:', error);
+      }
+    });
+    this.adminService.getApplications().subscribe({
+      next: (data) => {
+        this.applicationsData = data;
+      },
+      error: (error) => {
+        console.error('Error loading applications data:', error);
+      }
+    });
+    this.adminService.getResources().subscribe({
+      next: (data) => {
+        this.resourcesData = data;
+      },
+      error: (error) => {
+        console.error('Error loading resources data:', error);
+      }
     });
   }
 
@@ -111,7 +146,10 @@ export class AdminComponent implements OnInit {
     this.selectedRoles = user.roles.map((role) => role.id);
     this.selectedUserGroups = user.userGroups.map((group) => group.id);
     const dialogRef = this.dialog.open(UserDialogComponent, {
-      width: '250px',
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
       data: {
         user: this.selectedUser,
         rolesData: this.rolesData,
@@ -131,10 +169,51 @@ export class AdminComponent implements OnInit {
     });
   }
 
+  openRolesDialog() {
+    this.dialog.open(RolesDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: { roles: this.rolesData }
+    });
+  }
+
+  openUserGroupsDialog() {
+    const dialogRef = this.dialog.open(UserGroupDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: { userGroups: this.userGroupsData, applications: this.applicationsData }
+    });
+
+    dialogRef.afterClosed().subscribe((changedUserGroups: UserGroupDto[]) => {
+      if (changedUserGroups && changedUserGroups.length > 0) {
+        this.updateUserGroups(changedUserGroups);
+      }
+    });
+  }
+
+  updateUserGroups(changedUserGroups: UserGroupDto[]) {
+    console.log('Updating User Groups:', changedUserGroups);
+    this.loadingService.show();
+    this.adminService.updateUserGroups(changedUserGroups).subscribe({
+      next: (response) => {
+        console.log('User groups updated successfully:', response);
+        this.loadData();
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        console.error('Error updating user groups:', error);
+        this.loadingService.hide();
+      }
+    });
+  }
+
   saveChanges() {
     this.loadingService.show();
 
-    // Map the selectedRoles array back to the roles array without resources
     const rolesWithoutResources = this.selectedRoles.map((roleId) => {
       const role = this.rolesData.find((r) => r.id === roleId);
       if (role) {
@@ -144,7 +223,6 @@ export class AdminComponent implements OnInit {
       return null;
     }).filter(role => role !== null);
 
-    // Map the selectedUserGroups array back to the userGroups array without applications
     const userGroupsWithoutApplications = this.selectedUserGroups.map((groupId) => {
       const group = this.userGroupsData.find((g) => g.id === groupId);
       if (group) {
@@ -164,17 +242,17 @@ export class AdminComponent implements OnInit {
     const headers = new HttpHeaders(); // No need to set Authorization header explicitly
     console.log(updatedUser);
 
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe(
-      (response) => {
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
+      next: (response) => {
         console.log('Put request successful:', response);
         this.loadData(); // Reload data after successful update
         this.loadingService.hide();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error in Put request for .../api/User/update-user:', error);
         this.loadingService.hide();
       }
-    );
+    });
   }
 
   confirmDelete(user: UserDataDto) {
@@ -214,17 +292,17 @@ export class AdminComponent implements OnInit {
     const userId = updatedUser.id;
     const headers = new HttpHeaders(); // No need to set Authorization header explicitly
 
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe(
-      (response) => {
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
+      next: (response) => {
         console.log('User deactivated successfully:', response);
         this.loadData(); // Reload data after successful deactivation
         this.loadingService.hide();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error in deactivating user:', error);
         this.loadingService.hide();
       }
-    );
+    });
   }
 
   undeleteUser(user: UserDataDto) {
@@ -238,16 +316,16 @@ export class AdminComponent implements OnInit {
     const userId = updatedUser.id;
     const headers = new HttpHeaders(); // No need to set Authorization header explicitly
 
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe(
-      (response) => {
+    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
+      next: (response) => {
         console.log('User reactivated successfully:', response);
         this.loadData(); // Reload data after successful reactivation
         this.loadingService.hide();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error in reactivating user:', error);
         this.loadingService.hide();
       }
-    );
+    });
   }
 }

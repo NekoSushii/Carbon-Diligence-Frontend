@@ -1,8 +1,7 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CookieService } from 'ngx-cookie-service';
 import { Observable } from 'rxjs';
-import { RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
+import { ApplicationDto, ResourcesDto, RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
 
 @Injectable({
   providedIn: 'root'
@@ -10,32 +9,29 @@ import { RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component'
 export class AdminService {
   private apiUrl = 'http://localhost:5206/api';
 
-  constructor(private http: HttpClient, private cookieService: CookieService,) {}
+  constructor(private http: HttpClient) {}
 
   getUsersData(): Observable<UserDataDto[]> {
-    const token = this.cookieService.get('jwtToken');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<UserDataDto[]>(`${this.apiUrl}/User/GetUsers`, { headers });
+    return this.http.get<UserDataDto[]>(`${this.apiUrl}/User/GetUsers`, { withCredentials: true });
   }
 
   getRoles(): Observable<RolesResourcesDto[]> {
-    const token = this.cookieService.get('jwtToken');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
-
-    return this.http.get<RolesResourcesDto[]>(`${this.apiUrl}/UserManagement/GetRoles`, {headers});
+    return this.http.get<RolesResourcesDto[]>(`${this.apiUrl}/UserManagement/GetRoles`, { withCredentials: true });
   }
 
-  getUserGroup(): Observable<UserGroupDto[]> {
-    const token = this.cookieService.get('jwtToken');
-    const headers = new HttpHeaders({
-      'Authorization': `Bearer ${token}`
-    });
+  getUserGroups(): Observable<UserGroupDto[]> {
+    return this.http.get<UserGroupDto[]>(`${this.apiUrl}/UserManagement/GetUserGroups`, { withCredentials: true });
+  }
 
-    return this.http.get<UserGroupDto[]>(`${this.apiUrl}/UserManagement/GetUserGroups`, {headers})
+  getApplications(): Observable<ApplicationDto[]> {
+    return this.http.get<ApplicationDto[]>(`${this.apiUrl}/UserManagement/GetApplications`, { withCredentials: true });
+  }
+
+  getResources(): Observable<ResourcesDto[]> {
+    return this.http.get<ResourcesDto[]>(`${this.apiUrl}/UserManagement/GetResources`, { withCredentials: true });
+  }
+
+  updateUserGroups(userGroups: UserGroupDto[]): Observable<any> {
+    return this.http.put(`${this.apiUrl}/UserManagement/UpdateUserGroups`, userGroups, { withCredentials: true });
   }
 }

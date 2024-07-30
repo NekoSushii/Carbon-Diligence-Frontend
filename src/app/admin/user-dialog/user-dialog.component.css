@@ -1,6 +1,6 @@
 /* Style for the dialog container */
 .modal-content {
-  padding: 20px;
+  padding: 50px;
   width: 100%;
   max-width: 500px;
   margin: auto;
@@ -21,4 +21,10 @@
 /* Style for the buttons */
 button {
   margin-left: 10px;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px; /* Adjust spacing between form fields as needed */
 }

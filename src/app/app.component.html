@@ -8,5 +8,6 @@
       <router-outlet></router-outlet>
     </div>
   </div>
+  <app-loading-screen [isLoading]="(isLoading$ | async) | safeBoolean"></app-loading-screen>
   <!-- <app-footer></app-footer> -->
 </div>
