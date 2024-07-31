@@ -17,10 +17,12 @@
   margin:5px;
   padding-left: 8px;
   padding-right: 8px;
+  text-decoration: none;
 }
 
 .header-text {
   color: white;
+  text-decoration: none;
 }
 
 .header-text:hover {
