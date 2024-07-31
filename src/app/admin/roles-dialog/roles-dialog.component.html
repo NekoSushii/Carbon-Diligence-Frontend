@@ -1,9 +1,56 @@
-<h2>Manage Roles</h2>
-<mat-list>
-  <mat-list-item *ngFor="let role of data.roles">
-    {{ role.name }} - {{ role.description }}
-  </mat-list-item>
-</mat-list>
-<div mat-dialog-actions>
-  <button mat-button (click)="onClose()">Close</button>
+<div class="dialog-container">
+  <h2>Manage Roles</h2>
+  <button mat-button (click)="createRole()">Create New Role</button>
+  <div class="table-container">
+    <table mat-table [dataSource]="data.roles" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let role">
+          <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="role.name">
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> Description </th>
+        <td mat-cell *matCellDef="let role">
+          <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <input matInput [(ngModel)]="role.description">
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="resources">
+        <th mat-header-cell *matHeaderCellDef> Resources </th>
+        <td mat-cell *matCellDef="let role">
+          <mat-form-field appearance="fill">
+            <mat-label>Resources</mat-label>
+            <mat-select [(ngModel)]="role.resources" multiple>
+              <mat-option *ngFor="let resource of data.resources" [value]="resource.id">
+                {{ resource.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+      
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let role">
+          <button mat-button (click)="deleteRole(role)">Delete</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Close</button>
+    <button mat-button (click)="saveChanges()">Save</button>
+  </div>
 </div>

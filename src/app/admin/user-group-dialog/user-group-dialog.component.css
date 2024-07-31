@@ -1,5 +1,26 @@
 .dialog-container {
-    padding: 50px;
-    box-sizing: border-box;
-  }
-  
+  padding: 50px;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.table-container {
+  max-height: 60vh;
+  overflow: auto;
+  margin-bottom: 20px;
+}
+
+.mat-form-field {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+button {
+  margin-left: 10px;
+}

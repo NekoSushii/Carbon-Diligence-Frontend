@@ -34,6 +34,7 @@ export interface RolesResourcesDto {
 }
 
 export interface ResourcesDto {
+  id: string;
   name: string;
   description: string;
   status: string;
@@ -47,6 +48,7 @@ export interface UserGroupDto {
 }
 
 export interface ApplicationDto {
+  id: string;
   name: string;
   description: string;
   isActive: boolean;
@@ -96,6 +98,7 @@ export class AdminComponent implements OnInit {
   }
 
   loadData() {
+    console.log('LOADDATA');
     this.loadingService.show();
     this.adminService.getUsersData().subscribe({
       next: (data) => {
@@ -170,15 +173,25 @@ export class AdminComponent implements OnInit {
   }
 
   openRolesDialog() {
-    this.dialog.open(RolesDialogComponent, {
+    const dialogRef = this.dialog.open(RolesDialogComponent, {
       width: '80vw',
       height: '80vh',
       maxWidth: '80vw',
       maxHeight: '80vh',
-      data: { roles: this.rolesData }
+      data: { roles: this.rolesData, resources: this.resourcesData }
+    });
+  
+    dialogRef.componentInstance.dataChanged.subscribe(() => {
+      this.loadData();
+    });
+  
+    dialogRef.afterClosed().subscribe((changedRoles: RolesResourcesDto[]) => {
+      if (changedRoles && changedRoles.length > 0) {
+        this.updateRoles(changedRoles);
+      }
     });
   }
-
+  
   openUserGroupsDialog() {
     const dialogRef = this.dialog.open(UserGroupDialogComponent, {
       width: '80vw',
@@ -187,10 +200,29 @@ export class AdminComponent implements OnInit {
       maxHeight: '80vh',
       data: { userGroups: this.userGroupsData, applications: this.applicationsData }
     });
-
+  
+    dialogRef.componentInstance.dataChanged.subscribe(() => {
+      this.loadData();
+    });
+  
     dialogRef.afterClosed().subscribe((changedUserGroups: UserGroupDto[]) => {
       if (changedUserGroups && changedUserGroups.length > 0) {
         this.updateUserGroups(changedUserGroups);
+      }
+    });
+  }  
+
+  updateRoles(changedRoles: RolesResourcesDto[]) {
+    this.loadingService.show();
+    this.adminService.updateRoles(changedRoles).subscribe({
+      next: (response) => {
+        console.log('Roles updated successfully:', response);
+        this.loadData();
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        console.error('Error updating roles:', error);
+        this.loadingService.hide();
       }
     });
   }
@@ -239,13 +271,12 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = this.selectedUser.id;
-    const headers = new HttpHeaders(); // No need to set Authorization header explicitly
-    console.log(updatedUser);
+    const headers = new HttpHeaders();
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
       next: (response) => {
         console.log('Put request successful:', response);
-        this.loadData(); // Reload data after successful update
+        this.loadData();
         this.loadingService.hide();
       },
       error: (error) => {
@@ -290,12 +321,12 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const headers = new HttpHeaders(); // No need to set Authorization header explicitly
+    const headers = new HttpHeaders();
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
       next: (response) => {
         console.log('User deactivated successfully:', response);
-        this.loadData(); // Reload data after successful deactivation
+        this.loadData();
         this.loadingService.hide();
       },
       error: (error) => {
@@ -314,12 +345,12 @@ export class AdminComponent implements OnInit {
     };
 
     const userId = updatedUser.id;
-    const headers = new HttpHeaders(); // No need to set Authorization header explicitly
+    const headers = new HttpHeaders();
 
     this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
       next: (response) => {
         console.log('User reactivated successfully:', response);
-        this.loadData(); // Reload data after successful reactivation
+        this.loadData();
         this.loadingService.hide();
       },
       error: (error) => {
