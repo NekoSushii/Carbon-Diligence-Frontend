@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
@@ -8,12 +9,14 @@ import { LoadingService } from '../loading-screen/loading.service';
 import { AuthService } from './auth.service';
 
 @Component({
-  // standalone: true,
+  standalone: true,
   selector: 'app-auth-callback',
   templateUrl: './auth-callback.component.html',
-  // imports: [CommonModule],
+  imports: [CommonModule],
 })
 export class AuthCallbackComponent implements OnInit {
+  user: any = null;
+  loading: boolean = true;
 
   constructor(
     private authService: AuthService,
@@ -60,15 +63,18 @@ export class AuthCallbackComponent implements OnInit {
           };
 
           sessionStorage.setItem('user', JSON.stringify(user));
+          this.user = user;
         } else {
           console.error('Invalid response received from the server.');
         }
       } catch (error) {
         console.error('Error sending token to backend:', error);
       } finally {
+        this.loading = false;
       }
     } else {
       console.error('Token is null. Unable to send token to backend.');
+      this.loading = false;
     }
   }
 }
