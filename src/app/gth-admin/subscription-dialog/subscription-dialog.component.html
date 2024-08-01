@@ -1,0 +1,89 @@
+<div class="dialog-container">
+    <h2>Manage Subscriptions</h2>
+    <button mat-button (click)="createSubscription()">Create New Subscription</button>
+    <div class="table-container">
+      <table mat-table [dataSource]="subscriptions" class="mat-elevation-z8">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef> Name </th>
+          <td mat-cell *matCellDef="let subscription">
+            <mat-form-field appearance="fill">
+              <mat-label>Name</mat-label>
+              <input matInput [(ngModel)]="subscription.name">
+            </mat-form-field>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef> Description </th>
+          <td mat-cell *matCellDef="let subscription">
+            <mat-form-field appearance="fill">
+              <mat-label>Description</mat-label>
+              <input matInput [(ngModel)]="subscription.description">
+            </mat-form-field>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="costPerLicense">
+          <th mat-header-cell *matHeaderCellDef> Cost Per License </th>
+          <td mat-cell *matCellDef="let subscription">
+            <mat-form-field appearance="fill">
+              <mat-label>Cost Per License</mat-label>
+              <input matInput type="number" [(ngModel)]="subscription.costPerLicense">
+            </mat-form-field>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="organizationId">
+          <th mat-header-cell *matHeaderCellDef> Organization </th>
+          <td mat-cell *matCellDef="let subscription">
+            <mat-form-field appearance="fill">
+              <mat-label>Organization</mat-label>
+              <mat-select [(ngModel)]="subscription.organizationId">
+                <mat-option *ngFor="let organization of organizations" [value]="organization.id">
+                  {{ organization.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="applicationId">
+          <th mat-header-cell *matHeaderCellDef> Application </th>
+          <td mat-cell *matCellDef="let subscription">
+            <mat-form-field appearance="fill">
+              <mat-label>Application</mat-label>
+              <mat-select [(ngModel)]="subscription.applicationId">
+                <mat-option *ngFor="let application of applications" [value]="application.id">
+                  {{ application.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="isActive">
+          <th mat-header-cell *matHeaderCellDef> Active Status </th>
+          <td mat-cell *matCellDef="let subscription">
+            {{ subscription.isActive ? 'Active' : 'Not Active' }}
+          </td>
+        </ng-container>
+  
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let subscription">
+            <button mat-icon-button color="warn" (click)="subscription.isActive ? deleteSubscription(subscription) : undeleteSubscription(subscription)">
+              <mat-icon>{{ subscription.isActive ? 'delete' : 'restore' }}</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+  
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button (click)="onClose()">Close</button>
+      <button mat-button (click)="saveChanges()">Save</button>
+    </div>
+  </div>
+  

@@ -1,0 +1,24 @@
+<div mat-dialog-content class="dialog-container">
+    <h2>{{data.title}}</h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="data.name">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <input matInput [(ngModel)]="data.description">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Options</mat-label>
+      <mat-select [(ngModel)]="data.selectedOptions" multiple>
+        <mat-option *ngFor="let option of data.options" [value]="option.id">
+          {{ option.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div mat-dialog-actions>
+      <button mat-button (click)="onClose()">Cancel</button>
+      <button mat-button (click)="onSave()">Save</button>
+    </div>
+  </div>
+  

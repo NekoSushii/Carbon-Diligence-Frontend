@@ -7,9 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
+import { SnackbarService } from '../snackbarService/snackbar.service';
 import { AdminService } from './admin.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { RolesDialogComponent } from './roles-dialog/roles-dialog.component';
@@ -92,7 +92,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     public dialog: MatDialog,
     private cdref: ChangeDetectorRef,
     private ngZone: NgZone,
-    private snackBar: MatSnackBar
+    private snackbarService: SnackbarService,
   ) {}
 
   ngOnInit() {
@@ -136,9 +136,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   }
 
   showErrorMessage(message: string) {
-    this.snackBar.open(message, 'Close', {
-      duration: 3000,
-    });
+    this.snackbarService.show('Failed to load data!: ' + message, 'Close', 3000);
   }
   
   getRoleNames(roleIds: number[]): string {
@@ -194,8 +192,11 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     dialogRef.afterClosed().subscribe((changedRoles: RolesResourcesDto[]) => {
       if (changedRoles && changedRoles.length > 0) {
         this.updateRoles(changedRoles);
+      } else {
+        this.loadData();
       }
     });
+    
   }
 
   openUserGroupsDialog() {
@@ -214,6 +215,8 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     dialogRef.afterClosed().subscribe((changedUserGroups: UserGroupDto[]) => {
       if (changedUserGroups && changedUserGroups.length > 0) {
         this.updateUserGroups(changedUserGroups);
+      } else {
+        this.loadData();
       }
     });
   }
@@ -221,6 +224,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   updateRoles(changedRoles: RolesResourcesDto[]) {
     this.adminService.updateRoles(changedRoles).subscribe({
       next: (response) => {
+        this.snackbarService.show('Roles updated', 'Close', 3000);
         this.loadData();
       },
       error: (error) => {
@@ -232,6 +236,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   updateUserGroups(changedUserGroups: UserGroupDto[]) {
     this.adminService.updateUserGroups(changedUserGroups).subscribe({
       next: (response) => {
+        this.snackbarService.show('UserGroup updated', 'Close', 3000);
         this.loadData();
       },
       error: (error) => {
@@ -249,6 +254,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
     this.adminService.updateUser(updatedUser).subscribe({
       next: (response) => {
+        this.snackbarService.show('User updated', 'Close', 3000);
         this.loadData();
       },
       error: (error) => {
@@ -266,6 +272,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.deleteUser(user);
+        this.snackbarService.show('User deleted', 'Close', 3000);
       }
     });
   }
@@ -279,6 +286,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.undeleteUser(user);
+        this.snackbarService.show('User restored', 'Close', 3000);
       }
     });
   }

@@ -33,6 +33,7 @@ export class RolesDialogComponent {
   @Output() dataChanged = new EventEmitter<void>();
 
   displayedColumns: string[] = ['name', 'description', 'resources', 'actions'];
+  roles: RolesResourcesDto[] = [];
   originalRoles: RolesResourcesDto[];
 
   constructor(
@@ -42,6 +43,7 @@ export class RolesDialogComponent {
     private adminService: AdminService,
     private cdr: ChangeDetectorRef
   ) {
+    this.roles = JSON.parse(JSON.stringify(data.roles));
     this.originalRoles = JSON.parse(JSON.stringify(data.roles));
   }
 
@@ -50,12 +52,24 @@ export class RolesDialogComponent {
   }
 
   saveChanges(): void {
-    const changedRoles = this.data.roles.filter((role, index) => {
+    const changedRoles = this.roles.filter((role, index) => {
       return !isEqual(role, this.originalRoles[index]);
     });
 
-    this.dialogRef.close(changedRoles);
-    this.dataChanged.emit();
+    // Send changed roles to the server
+    if (changedRoles.length > 0) {
+      this.adminService.updateRoles(changedRoles).subscribe({
+        next: () => {
+          this.refreshData();
+          this.dataChanged.emit();
+        },
+        error: (error) => {
+          console.error('Error updating roles:', error);
+        }
+      });
+    } else {
+      this.refreshData();
+    }
   }
 
   createRole(): void {
@@ -82,7 +96,7 @@ export class RolesDialogComponent {
         this.adminService.createRole(newRole).subscribe({
           next: (response) => {
             newRole.id = response.id;
-            this.data.roles.push(newRole);
+            this.roles.push(newRole);
             this.refreshData();
             this.dataChanged.emit();
           },
@@ -98,9 +112,9 @@ export class RolesDialogComponent {
     if (confirm(`Are you sure you want to delete the role ${role.name}?`)) {
       this.adminService.deleteRole(role.id).subscribe({
         next: () => {
-          const index = this.data.roles.indexOf(role);
+          const index = this.roles.indexOf(role);
           if (index > -1) {
-            this.data.roles.splice(index, 1);
+            this.roles.splice(index, 1);
             this.refreshData();
             this.dataChanged.emit();
           }
@@ -113,7 +127,7 @@ export class RolesDialogComponent {
   }
 
   private refreshData(): void {
-    this.originalRoles = JSON.parse(JSON.stringify(this.data.roles));
+    this.originalRoles = JSON.parse(JSON.stringify(this.roles));
     this.cdr.detectChanges();
   }
 }

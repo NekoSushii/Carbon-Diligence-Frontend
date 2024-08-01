@@ -1,0 +1,64 @@
+<div class="dialog-container">
+  <h2>Manage Organizations</h2>
+  <button mat-button (click)="createOrganization()">Create New Organization</button>
+  <div class="table-container">
+    <table mat-table [dataSource]="organizations" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let organization">
+          <mat-form-field appearance="fill">
+            <mat-label>Name</mat-label>
+            <input matInput [(ngModel)]="organization.name">
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="description">
+        <th mat-header-cell *matHeaderCellDef> Description </th>
+        <td mat-cell *matCellDef="let organization">
+          <mat-form-field appearance="fill">
+            <mat-label>Description</mat-label>
+            <input matInput [(ngModel)]="organization.description">
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isActive">
+        <th mat-header-cell *matHeaderCellDef> Active Status </th>
+        <td mat-cell *matCellDef="let organization">
+          {{ organization.isActive ? 'Active' : 'Not Active' }}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="subscription">
+        <th mat-header-cell *matHeaderCellDef> Subscriptions </th>
+        <td mat-cell *matCellDef="let organization">
+          <mat-form-field appearance="fill">
+            <mat-label>Subscriptions</mat-label>
+            <mat-select [(ngModel)]="organization.subscription" multiple>
+              <mat-option *ngFor="let subscription of data.subscriptions" [value]="subscription.id">
+                {{ subscription.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let organization">
+          <button mat-icon-button color="warn" (click)="organization.isActive ? deleteOrganization(organization) : undeleteOrganization(organization)">
+            <mat-icon>{{ organization.isActive ? 'delete' : 'restore' }}</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Close</button>
+    <button mat-button (click)="saveChanges()">Save</button>
+  </div>
+</div>
