@@ -4,13 +4,13 @@
   z-index: 1000;
 }
 .mat-toolbar {
-  background-color: darkblue; /* Dark background color */
-  color: white; /* Light text color */
+  background-color: darkblue;
+  color: white;
 }
 
 .mat-icon {
-  font-size: 1.5rem; /* Larger icon size */
-  margin-right: 8px; /* Margin between icon and text */
+  font-size: 1.5rem;
+  margin-right: 8px;
 }
 
 .header-item {

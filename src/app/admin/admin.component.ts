@@ -1,6 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
@@ -8,9 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
-import { LoadingService } from '../loading-screen/loading.service';
 import { AdminService } from './admin.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { RolesDialogComponent } from './roles-dialog/roles-dialog.component';
@@ -18,37 +17,37 @@ import { DialogData, UserDialogComponent } from './user-dialog/user-dialog.compo
 import { UserGroupDialogComponent } from './user-group-dialog/user-group-dialog.component';
 
 export interface UserDataDto {
-  id: string;
+  id: number;
   email: string;
   name: string;
-  roles: RolesResourcesDto[];
+  roles: number[];
   isActive: boolean;
-  userGroups: UserGroupDto[];
+  userGroups: number[];
 }
 
 export interface RolesResourcesDto {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  resources: ResourcesDto[];
+  resources: number[];
 }
 
 export interface ResourcesDto {
-  id: string;
+  id: number;
   name: string;
   description: string;
   status: string;
 }
 
 export interface UserGroupDto {
-  id: string;
+  id: number;
   name: string;
   description: string;
-  applications: ApplicationDto[];
+  applications: number[];
 }
 
 export interface ApplicationDto {
-  id: string;
+  id: number;
   name: string;
   description: string;
   isActive: boolean;
@@ -73,81 +72,88 @@ export interface ApplicationDto {
     ConfirmDialogComponent,
     UserDialogComponent,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   usersData: UserDataDto[] = [];
   rolesData: RolesResourcesDto[] = [];
   userGroupsData: UserGroupDto[] = [];
   applicationsData: ApplicationDto[] = [];
   resourcesData: ResourcesDto[] = [];
-  selectedUser: UserDataDto = { id: '', email: '', name: '', roles: [], isActive: true, userGroups: [] };
-  selectedRoles: string[] = [];
-  selectedUserGroups: string[] = [];
+  selectedUser: UserDataDto = { id: 0, email: '', name: '', roles: [], isActive: true, userGroups: [] };
+  selectedRoles: number[] = [];
+  selectedUserGroups: number[] = [];
   loading: boolean = true;
   displayedColumns: string[] = ['email', 'name', 'roles', 'userGroups', 'isActive', 'action'];
+  dataLoaded: boolean = false;
 
   constructor(
     private adminService: AdminService,
-    private http: HttpClient,
-    private loadingService: LoadingService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private cdref: ChangeDetectorRef,
+    private ngZone: NgZone,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
-    this.loadData();
+  }
+
+  ngAfterViewInit() {
+    setTimeout(() => {
+      this.loadData();
+    });
+  }
+
+  ngAfterViewChecked() {
   }
 
   loadData() {
-    console.log('LOADDATA');
-    this.loadingService.show();
-    this.adminService.getUsersData().subscribe({
-      next: (data) => {
-        this.usersData = data;
-        this.loadingService.hide();
+    this.adminService.loadAllData().subscribe({
+      next: (result) => {
+        this.ngZone.run(() => {
+          this.usersData = result.usersData;
+          this.rolesData = result.rolesData;
+          this.userGroupsData = result.userGroupsData;
+          this.applicationsData = result.applicationsData;
+          this.resourcesData = result.resourcesData;
+          this.dataLoaded = true;
+          setTimeout(() => {
+            this.loading = false;
+            this.cdref.detectChanges();
+          }, 0);
+        });
       },
       error: (error) => {
-        console.error('Error loading user data:', error);
-        this.loadingService.hide();
-      }
-    });
-    this.adminService.getRoles().subscribe({
-      next: (data) => {
-        this.rolesData = data;
-      },
-      error: (error) => {
-        console.error('Error loading roles data:', error);
-      }
-    });
-    this.adminService.getUserGroups().subscribe({
-      next: (data) => {
-        this.userGroupsData = data;
-      },
-      error: (error) => {
-        console.error('Error loading user groups data:', error);
-      }
-    });
-    this.adminService.getApplications().subscribe({
-      next: (data) => {
-        this.applicationsData = data;
-      },
-      error: (error) => {
-        console.error('Error loading applications data:', error);
-      }
-    });
-    this.adminService.getResources().subscribe({
-      next: (data) => {
-        this.resourcesData = data;
-      },
-      error: (error) => {
-        console.error('Error loading resources data:', error);
+        console.error('Error loading data:', error);
+        this.ngZone.run(() => {
+          setTimeout(() => {
+            this.loading = false;
+            this.cdref.detectChanges();
+          }, 0);
+        });
       }
     });
   }
 
+  showErrorMessage(message: string) {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+    });
+  }
+  
+  getRoleNames(roleIds: number[]): string {
+    return roleIds.map(id => this.rolesData.find(role => role.id === id)?.name).filter(name => name).join(', ');
+  }
+
+  getUserGroupNames(groupIds: number[]): string {
+    return groupIds.map(id => this.userGroupsData.find(group => group.id === id)?.name).filter(name => name).join(', ');
+  }
+  
   openModal(user: UserDataDto) {
     this.selectedUser = { ...user };
-    this.selectedRoles = user.roles.map((role) => role.id);
-    this.selectedUserGroups = user.userGroups.map((group) => group.id);
+    this.selectedRoles = user.roles;
+    this.selectedUserGroups = user.userGroups;
+  
     const dialogRef = this.dialog.open(UserDialogComponent, {
       width: '80vw',
       height: '80vh',
@@ -161,7 +167,7 @@ export class AdminComponent implements OnInit {
         selectedUserGroups: this.selectedUserGroups,
       } as DialogData,
     });
-
+  
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.selectedUser = result.user;
@@ -171,7 +177,7 @@ export class AdminComponent implements OnInit {
       }
     });
   }
-
+  
   openRolesDialog() {
     const dialogRef = this.dialog.open(RolesDialogComponent, {
       width: '80vw',
@@ -180,18 +186,18 @@ export class AdminComponent implements OnInit {
       maxHeight: '80vh',
       data: { roles: this.rolesData, resources: this.resourcesData }
     });
-  
+
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
     });
-  
+
     dialogRef.afterClosed().subscribe((changedRoles: RolesResourcesDto[]) => {
       if (changedRoles && changedRoles.length > 0) {
         this.updateRoles(changedRoles);
       }
     });
   }
-  
+
   openUserGroupsDialog() {
     const dialogRef = this.dialog.open(UserGroupDialogComponent, {
       width: '80vw',
@@ -200,88 +206,53 @@ export class AdminComponent implements OnInit {
       maxHeight: '80vh',
       data: { userGroups: this.userGroupsData, applications: this.applicationsData }
     });
-  
+
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
     });
-  
+
     dialogRef.afterClosed().subscribe((changedUserGroups: UserGroupDto[]) => {
       if (changedUserGroups && changedUserGroups.length > 0) {
         this.updateUserGroups(changedUserGroups);
       }
     });
-  }  
+  }
 
   updateRoles(changedRoles: RolesResourcesDto[]) {
-    this.loadingService.show();
     this.adminService.updateRoles(changedRoles).subscribe({
       next: (response) => {
-        console.log('Roles updated successfully:', response);
         this.loadData();
-        this.loadingService.hide();
       },
       error: (error) => {
         console.error('Error updating roles:', error);
-        this.loadingService.hide();
       }
     });
   }
 
   updateUserGroups(changedUserGroups: UserGroupDto[]) {
-    console.log('Updating User Groups:', changedUserGroups);
-    this.loadingService.show();
     this.adminService.updateUserGroups(changedUserGroups).subscribe({
       next: (response) => {
-        console.log('User groups updated successfully:', response);
         this.loadData();
-        this.loadingService.hide();
       },
       error: (error) => {
         console.error('Error updating user groups:', error);
-        this.loadingService.hide();
       }
     });
   }
 
   saveChanges() {
-    this.loadingService.show();
-
-    const rolesWithoutResources = this.selectedRoles.map((roleId) => {
-      const role = this.rolesData.find((r) => r.id === roleId);
-      if (role) {
-        const { resources, ...rest } = role;
-        return rest;
-      }
-      return null;
-    }).filter(role => role !== null);
-
-    const userGroupsWithoutApplications = this.selectedUserGroups.map((groupId) => {
-      const group = this.userGroupsData.find((g) => g.id === groupId);
-      if (group) {
-        const { applications, ...rest } = group;
-        return rest;
-      }
-      return null;
-    }).filter(group => group !== null);
-
     const updatedUser = {
       ...this.selectedUser,
-      roles: rolesWithoutResources,
-      userGroups: userGroupsWithoutApplications
+      roles: this.selectedRoles,
+      userGroups: this.selectedUserGroups
     };
 
-    const userId = this.selectedUser.id;
-    const headers = new HttpHeaders();
-
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
+    this.adminService.updateUser(updatedUser).subscribe({
       next: (response) => {
-        console.log('Put request successful:', response);
         this.loadData();
-        this.loadingService.hide();
       },
       error: (error) => {
         console.error('Error in Put request for .../api/User/update-user:', error);
-        this.loadingService.hide();
       }
     });
   }
@@ -313,50 +284,35 @@ export class AdminComponent implements OnInit {
   }
 
   deleteUser(user: UserDataDto) {
-    this.loadingService.show();
-
     const updatedUser = {
       ...user,
       isActive: false
     };
 
-    const userId = updatedUser.id;
-    const headers = new HttpHeaders();
-
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
+    this.adminService.updateUser(updatedUser).subscribe({
       next: (response) => {
-        console.log('User deactivated successfully:', response);
         this.loadData();
-        this.loadingService.hide();
       },
       error: (error) => {
         console.error('Error in deactivating user:', error);
-        this.loadingService.hide();
       }
     });
   }
 
   undeleteUser(user: UserDataDto) {
-    this.loadingService.show();
-
     const updatedUser = {
       ...user,
       isActive: true
     };
 
-    const userId = updatedUser.id;
-    const headers = new HttpHeaders();
-
-    this.http.put(`http://localhost:5206/api/User/UpdateUser/${userId}`, updatedUser, { headers, withCredentials: true }).subscribe({
+    this.adminService.updateUser(updatedUser).subscribe({
       next: (response) => {
-        console.log('User reactivated successfully:', response);
         this.loadData();
-        this.loadingService.hide();
       },
       error: (error) => {
         console.error('Error in reactivating user:', error);
-        this.loadingService.hide();
       }
     });
   }
+
 }

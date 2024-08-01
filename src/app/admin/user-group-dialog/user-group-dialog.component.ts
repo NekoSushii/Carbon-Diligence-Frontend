@@ -41,7 +41,7 @@ export class UserGroupDialogComponent {
     private adminService: AdminService,
     private cdr: ChangeDetectorRef
   ) {
-    this.originalUserGroups = JSON.parse(JSON.stringify(data.userGroups)); // Deep copy to track changes
+    this.originalUserGroups = JSON.parse(JSON.stringify(data.userGroups));
   }
 
   onClose(): void {
@@ -53,9 +53,8 @@ export class UserGroupDialogComponent {
       return JSON.stringify(group) !== JSON.stringify(this.originalUserGroups[index]);
     });
 
-    console.log('Changed User Groups:', changedUserGroups);
     this.dialogRef.close(changedUserGroups);
-    this.dataChanged.emit(); // Emit event to notify changes
+    this.dataChanged.emit();
   }
 
   createUserGroup(): void {
@@ -69,24 +68,22 @@ export class UserGroupDialogComponent {
         selectedOptions: []
       }
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const newUserGroup: UserGroupDto = {
-          id: '',
+          id: 0,
           name: result.name,
           description: result.description,
-          applications: result.selectedOptions.map((id: string) => {
-            return this.data.applications.find(application => application.id === id);
-          })
+          applications: result.selectedOptions
         };
-  
+
         this.adminService.createUserGroup(newUserGroup).subscribe({
           next: (response) => {
-            newUserGroup.id = response.id; // Assuming the response contains the new user group ID
+            newUserGroup.id = response.id;
             this.data.userGroups.push(newUserGroup);
             this.refreshData();
-            this.dataChanged.emit(); // Emit event to notify changes
+            this.dataChanged.emit();
           },
           error: (error) => {
             console.error('Error creating user group:', error);
@@ -95,7 +92,6 @@ export class UserGroupDialogComponent {
       }
     });
   }
-  
 
   deleteUserGroup(userGroup: UserGroupDto): void {
     if (confirm(`Are you sure you want to delete the user group ${userGroup.name}?`)) {
@@ -105,7 +101,7 @@ export class UserGroupDialogComponent {
           if (index > -1) {
             this.data.userGroups.splice(index, 1);
             this.refreshData();
-            this.dataChanged.emit(); // Emit event to notify changes
+            this.dataChanged.emit();
           }
         },
         error: (error) => {
@@ -114,11 +110,9 @@ export class UserGroupDialogComponent {
       });
     }
   }
-  
 
   private refreshData(): void {
-    this.originalUserGroups = JSON.parse(JSON.stringify(this.data.userGroups)); // Update original user groups for change detection
-    this.cdr.detectChanges(); // Trigger change detection
+    this.originalUserGroups = JSON.parse(JSON.stringify(this.data.userGroups));
+    this.cdr.detectChanges();
   }
-  
 }

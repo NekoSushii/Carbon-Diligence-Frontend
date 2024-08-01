@@ -7,6 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { isEqual } from 'lodash';
 import { ResourcesDto, RolesResourcesDto } from '../admin.component';
 import { AdminService } from '../admin.service';
 import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
@@ -41,8 +42,7 @@ export class RolesDialogComponent {
     private adminService: AdminService,
     private cdr: ChangeDetectorRef
   ) {
-    this.originalRoles = JSON.parse(JSON.stringify(data.roles)); // Deep copy to track changes
-    console.log(data);
+    this.originalRoles = JSON.parse(JSON.stringify(data.roles));
   }
 
   onClose(): void {
@@ -51,12 +51,11 @@ export class RolesDialogComponent {
 
   saveChanges(): void {
     const changedRoles = this.data.roles.filter((role, index) => {
-      return JSON.stringify(role) !== JSON.stringify(this.originalRoles[index]);
+      return !isEqual(role, this.originalRoles[index]);
     });
 
-    console.log('Changed Roles:', changedRoles);
-    this.dataChanged.emit(); // Emit event to notify changes
-    this.refreshData();
+    this.dialogRef.close(changedRoles);
+    this.dataChanged.emit();
   }
 
   createRole(): void {
@@ -70,24 +69,22 @@ export class RolesDialogComponent {
         selectedOptions: []
       }
     });
-  
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const newRole: RolesResourcesDto = {
-          id: '',
+          id: 0,
           name: result.name,
           description: result.description,
-          resources: result.selectedOptions.map((id: string) => {
-            return this.data.resources.find(resource => resource.id === id);
-          })
+          resources: result.selectedOptions
         };
-  
+
         this.adminService.createRole(newRole).subscribe({
           next: (response) => {
-            newRole.id = response.id; // Assuming the response contains the new role ID
+            newRole.id = response.id;
             this.data.roles.push(newRole);
             this.refreshData();
-            this.dataChanged.emit(); // Emit event to notify changes
+            this.dataChanged.emit();
           },
           error: (error) => {
             console.error('Error creating role:', error);
@@ -105,7 +102,7 @@ export class RolesDialogComponent {
           if (index > -1) {
             this.data.roles.splice(index, 1);
             this.refreshData();
-            this.dataChanged.emit(); // Emit event to notify changes
+            this.dataChanged.emit();
           }
         },
         error: (error) => {
@@ -116,7 +113,7 @@ export class RolesDialogComponent {
   }
 
   private refreshData(): void {
-    this.originalRoles = JSON.parse(JSON.stringify(this.data.roles)); // Update original roles for change detection
-    this.cdr.detectChanges(); // Trigger change detection
+    this.originalRoles = JSON.parse(JSON.stringify(this.data.roles));
+    this.cdr.detectChanges();
   }
 }

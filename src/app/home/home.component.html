@@ -1,17 +1,24 @@
-<div class="content-grid">
-  <mat-grid-list cols="3" rowHeight="200px" gutterSize="16px">
-    <mat-grid-tile *ngFor="let card of cards">
-      <mat-card class="card">
-        <mat-card-header>
-          <mat-card-title>{{ card.title }}</mat-card-title>
-        </mat-card-header>
-        <mat-card-content class="card-content">
-          <p class="truncate">{{ card.content }}</p>
-        </mat-card-content>
-        <mat-card-actions>
-          <button mat-button>{{ card.button }}</button>
-        </mat-card-actions>
-      </mat-card>
-    </mat-grid-tile>
-  </mat-grid-list>
+<div *ngIf="cards$ | async as cards; else loading">
+  <div class="content-grid">
+    <mat-grid-list cols="3" rowHeight="200px" gutterSize="16px">
+      <mat-grid-tile *ngFor="let card of cards">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title>{{ card.title }}</mat-card-title>
+          </mat-card-header>
+          <mat-card-content class="card-content">
+            <p class="truncate">{{ card.content }}</p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button>{{ card.button }}</button>
+          </mat-card-actions>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
+  </div>
 </div>
+<ng-template #loading>
+  <div class="loading">
+    <p>Loading...</p>
+  </div>
+</ng-template>

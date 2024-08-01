@@ -1,6 +1,5 @@
 :root {
-  --header-footer-height: 100px; /* Adjust this value as needed */
-  /* --main-container-height: calc(75vh); */
+  --header-footer-height: 100px;
 }
 
 body, html {
@@ -15,12 +14,12 @@ app-header, app-footer {
 
 .main-container {
   display: grid;
-  grid-template-columns: 20% 80%;
-  height: var(--main-container-height); /* Main container height considering header and footer */
+  grid-template-columns: 15% 80%;
+  height: var(--main-container-height);
 }
 
 app-sidebar {
-  background-color: #f8f9fa; /* Optional: Background color for sidebar */
+  background-color: #f8f9fa;
   padding: 16px;
   box-sizing: border-box;
   overflow-y: auto;
@@ -31,5 +30,5 @@ app-sidebar {
   box-sizing: border-box;
   overflow-y: auto;
   position: relative;
-  height: 100%; /* Ensure content container takes full height of main container */
+  height: 100%;
 }

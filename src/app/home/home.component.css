@@ -1,45 +1,49 @@
 :root {
-  --dynamic-font-size: 1rem; /* Default value */
-  --card-size: 200px; /* Default card size */
+  --dynamic-font-size: 1rem;
+  --card-size: 200px;
 }
 
 .content-grid {
-  width: 100%; /* Ensure the grid takes up the full width of the content container */
-  /* height: 75vh; */
-  margin: 0 auto; /* Center the grid */
+  width: 100%;
+  margin: 0 auto;
 }
 
 mat-card {
   margin: 8px;
-  width: 100%; /* Full width of the grid tile */
-  height: 100%; /* Full height of the grid tile */
+  width: 100%;
+  height: 100%;
 }
 
 .card-content {
-  height: calc(100% - 64px); /* Adjust content height considering header and padding */
+  height: calc(100% - 64px);
   overflow: hidden;
 }
 
 mat-card-content .truncate {
-  display: -webkit-box; /* Use -webkit-box for multi-line truncation */
-  -webkit-box-orient: vertical; /* Set box orientation to vertical */
-  -webkit-line-clamp: 3; /* Number of lines to show before truncating */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* Show ellipsis */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 mat-grid-tile {
   padding: 0;
-  /* Remove default padding from grid tiles */
 }
 
 @media (max-width: 599px) {
   mat-grid-list {
     grid-template-columns: 1fr !important;
-    /* Single column layout for small screens */
   }
 
   mat-card {
-    max-width: calc(100% - 32px); /* Adjust card width for small screens */
+    max-width: calc(100% - 32px);
   }
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }

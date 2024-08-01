@@ -13,9 +13,9 @@ import { RolesResourcesDto, UserDataDto, UserGroupDto } from '../admin.component
 export interface DialogData {
   user: UserDataDto;
   rolesData: RolesResourcesDto[];
-  selectedRoles: string[];
+  selectedRoles: number[];
   userGroupsData: UserGroupDto[];
-  selectedUserGroups: string[];
+  selectedUserGroups: number[];
 }
 
 @Component({

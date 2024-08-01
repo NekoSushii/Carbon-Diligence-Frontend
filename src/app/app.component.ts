@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Observable } from 'rxjs';
 import { LayoutService } from './layout.service';
@@ -15,9 +15,10 @@ import { SidebarComponent } from "./shared/sidebar/sidebar.component";
   standalone: true,
   imports: [CommonModule, RouterModule, HeaderComponent, FooterComponent, SidebarComponent, LoadingScreenComponent, SharedModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewChecked {
   title = 'GreenTech Hub';
   showHeader$: Observable<boolean>;
   showSidebar: boolean = true;
@@ -33,4 +34,9 @@ export class AppComponent implements OnInit {
       this.showSidebar = this.router.url !== '/login';
     });
   }
+
+  ngAfterViewChecked() {
+  }
 }
+
+
