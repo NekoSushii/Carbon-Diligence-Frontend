@@ -3,12 +3,13 @@ import { Injectable } from '@angular/core';
 import * as AES from 'crypto-js/aes';
 import * as Utf8 from 'crypto-js/enc-utf8';
 import { lastValueFrom } from 'rxjs';
+import { SnackbarService } from '../snackbarService/snackbar.service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthCallbackService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private snackBarService: SnackbarService) {}
 
   async sendTokenToBackend(token: string): Promise<any> {
     const key = Utf8.parse('CarbonDiligenceCarbonDiligence32');
@@ -23,14 +24,17 @@ export class AuthCallbackService {
         this.http.post('http://localhost:5206/api/Login/Authenticate', quotedToken, { headers, withCredentials: true })
       );
 
-      if (response) {
+      if (response && response.id !== 0) {
+        console.log(response)
         return {
+          id: response.id,
           name: response.name,
           email: response.email,
           roles: response.roles,
           userGroups: response.userGroups,
         };
       } else {
+        this.snackBarService.show("No user found!", 'close', 3000);
         throw new Error('Invalid response received from the server.');
       }
     } catch (error) {

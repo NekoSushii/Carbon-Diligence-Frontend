@@ -51,7 +51,6 @@ export class GthAdminService {
   }
 
   updateOrganization(id: number, organization: OrganizationDto): Observable<any> {
-    console.log(organization);
     return this.http.put(`${this.apiUrl}/abs/User/UpdateOrganization`, organization, { withCredentials: true });
   }
 

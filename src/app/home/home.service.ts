@@ -1,11 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { UserDataDto } from '../gth-admin/gth-admin.component';
 
-export interface ApplicationDto {
-  id: string,
+interface SessionUser {
+  id: number,
   name: string,
-  description: string
+  email: string,
+  roles: number[],
+  userGroups: number[],
 }
 
 @Injectable({
@@ -16,7 +19,14 @@ export class HomeService {
 
   constructor(private http: HttpClient) {}
 
-  getApplications(): Observable<any[]> {
-    return this.http.get<ApplicationDto[]>(`${this.apiUrl}/abs/User/GetApplications`, { withCredentials: true });
+  getUsersData(): Observable<UserDataDto> {
+    const userString = sessionStorage.getItem('user');
+    if (!userString) {
+      throw new Error('User not found in session storage');
+    }
+
+    const currUser: SessionUser = JSON.parse(userString);
+
+    return this.http.get<UserDataDto>(`${this.apiUrl}/abs/User/GetUserByEmail/${currUser.email}`, { withCredentials: true });
   }
 }
