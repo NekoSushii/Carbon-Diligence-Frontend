@@ -51,7 +51,6 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
   async loadUserData() {
     try {
       const data = await this.homeService.getUsersData().toPromise();
-      console.log('User data:', data);
       this.ngZone.run(() => {
         if (data) {
           this.userData = data; // Single user data object
@@ -70,7 +69,6 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
   async loadData() {
     try {
       const result = await this.gthAdminService.loadAllData().toPromise();
-      console.log('Loaded data:', result);
       if (result) {
         this.ngZone.run(() => {
           this.organizationsData = result.organizationsData || [];
@@ -119,7 +117,6 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
     const userSubscriptions = this.subscriptionsData.filter(sub => sub.organizationId === this.userData.organizationId);
     const userApplicationIds = userSubscriptions.map(sub => sub.applicationId);
-    console.log('User application IDs:', userApplicationIds);
 
     const cards = this.applicationsData.map(app => ({
       title: app.name,
