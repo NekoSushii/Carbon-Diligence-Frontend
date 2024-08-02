@@ -1,0 +1,35 @@
+<div mat-dialog-content class="dialog-container">
+  <h2>{{data.title}}</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="data.name">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <input matInput [(ngModel)]="data.description">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Cost Per License</mat-label>
+    <input matInput type="number" [(ngModel)]="data.costPerLicense">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Organization</mat-label>
+    <mat-select [(ngModel)]="data.organizationId">
+      <mat-option *ngFor="let organization of data.organizations" [value]="organization.id">
+        {{ organization.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Application</mat-label>
+    <mat-select [(ngModel)]="data.applicationId">
+      <mat-option *ngFor="let application of data.applications" [value]="application.id">
+        {{ application.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Cancel</button>
+    <button mat-button (click)="onSave()">Save</button>
+  </div>
+</div>

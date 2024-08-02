@@ -9,7 +9,7 @@
       <input matInput [(ngModel)]="data.description">
     </mat-form-field>
     <mat-form-field appearance="fill">
-      <mat-label>Options</mat-label>
+      <mat-label>Subscriptions</mat-label>
       <mat-select [(ngModel)]="data.selectedOptions" multiple>
         <mat-option *ngFor="let option of data.options" [value]="option.id">
           {{ option.name }}
@@ -21,4 +21,3 @@
       <button mat-button (click)="onSave()">Save</button>
     </div>
   </div>
-  

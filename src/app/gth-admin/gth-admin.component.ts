@@ -103,6 +103,7 @@ export class GthAdminComponent implements OnInit, AfterViewInit, AfterViewChecke
           this.usersData = result.usersData;
           this.organizationsData = result.organizationsData;
           this.subscriptionsData = result.subscriptionsData;
+          this.applicationsData = result.applicationsData;
           this.dataLoaded = true;
           setTimeout(() => {
             this.loading = false;
@@ -206,11 +207,11 @@ export class GthAdminComponent implements OnInit, AfterViewInit, AfterViewChecke
       maxHeight: '80vh',
       data: { organizations: this.organizationsData, subscriptions: this.subscriptionsData }
     });
-  
+
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
     });
-  
+
     dialogRef.afterClosed().subscribe((changedOrganizations: OrganizationDto[]) => {
       if (changedOrganizations && changedOrganizations.length > 0) {
         this.updateOrganizations(changedOrganizations);
@@ -228,11 +229,11 @@ export class GthAdminComponent implements OnInit, AfterViewInit, AfterViewChecke
       maxHeight: '80vh',
       data: { subscriptions: this.subscriptionsData, organizations: this.organizationsData, applications: this.applicationsData }
     });
-  
+
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
     });
-  
+
     dialogRef.afterClosed().subscribe((changedSubscriptions: SubscriptionDto[]) => {
       if (changedSubscriptions && changedSubscriptions.length > 0) {
         this.updateSubscriptions(changedSubscriptions);
@@ -253,7 +254,7 @@ export class GthAdminComponent implements OnInit, AfterViewInit, AfterViewChecke
       }
     });
   }
-  
+
   updateSubscriptions(changedSubscriptions: SubscriptionDto[]) {
     this.gthAdminService.updateSubscriptions(changedSubscriptions).subscribe({
       next: (response) => {

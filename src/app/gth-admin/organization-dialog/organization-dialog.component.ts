@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { isEqual } from 'lodash';
-import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
+import { CreateOrganizationDialogComponent } from '../create-organization-dialog/create-organization-dialog.component';
 import { OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
 
@@ -29,7 +29,7 @@ import { GthAdminService } from '../gth-admin.service';
     MatTableModule,
     MatButtonModule,
     MatCheckboxModule,
-    CreateItemDialogComponent,
+    CreateOrganizationDialogComponent,
     MatIconModule
   ]
 })
@@ -76,7 +76,7 @@ export class OrganizationDialogComponent {
   }
 
   createOrganization(): void {
-    const dialogRef = this.dialog.open(CreateItemDialogComponent, {
+    const dialogRef = this.dialog.open(CreateOrganizationDialogComponent, {
       width: '400px',
       data: {
         title: 'Create New Organization',

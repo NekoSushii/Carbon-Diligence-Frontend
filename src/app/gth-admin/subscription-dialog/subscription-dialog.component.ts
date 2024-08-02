@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { isEqual } from 'lodash';
-import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
+import { CreateSubscriptionDialogComponent } from '../create-subscription-dialog/create-subscription-dialog.component';
 import { ApplicationDto, OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
 
@@ -29,7 +29,7 @@ import { GthAdminService } from '../gth-admin.service';
     MatTableModule,
     MatButtonModule,
     MatCheckboxModule,
-    CreateItemDialogComponent,
+    CreateSubscriptionDialogComponent,
     MatIconModule
   ]
 })
@@ -80,7 +80,7 @@ export class SubscriptionDialogComponent {
   }
 
   createSubscription(): void {
-    const dialogRef = this.dialog.open(CreateItemDialogComponent, {
+    const dialogRef = this.dialog.open(CreateSubscriptionDialogComponent, {
       width: '400px',
       data: {
         title: 'Create New Subscription',
@@ -88,7 +88,9 @@ export class SubscriptionDialogComponent {
         description: '',
         costPerLicense: 0,
         organizationId: null,
-        applicationId: null
+        applicationId: null,
+        organizations: this.organizations,
+        applications: this.applications
       }
     });
 

@@ -11,14 +11,17 @@ interface CreateItemData {
   title: string;
   name: string;
   description: string;
-  options: { id: string; name: string; }[];
-  selectedOptions: string[];
+  costPerLicense: number;
+  organizationId: number | null;
+  applicationId: number | null;
+  organizations: { id: number; name: string; }[];
+  applications: { id: number; name: string; }[];
 }
 
 @Component({
-  selector: 'app-create-item-dialog',
-  templateUrl: './create-item-dialog.component.html',
-  styleUrls: ['./create-item-dialog.component.css'],
+  selector: 'app-create-subscription-dialog',
+  templateUrl: './create-subscription-dialog.component.html',
+  styleUrls: ['./create-subscription-dialog.component.css'],
   standalone: true,
   imports: [
     CommonModule,
@@ -30,9 +33,9 @@ interface CreateItemData {
     MatButtonModule
   ]
 })
-export class CreateItemDialogComponent {
+export class CreateSubscriptionDialogComponent {
   constructor(
-    public dialogRef: MatDialogRef<CreateItemDialogComponent>,
+    public dialogRef: MatDialogRef<CreateSubscriptionDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: CreateItemData
   ) {}
 

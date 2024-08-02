@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, from } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { OrganizationDto, SubscriptionDto, UserDataDto } from './gth-admin.component';
+import { ApplicationDto, OrganizationDto, SubscriptionDto, UserDataDto } from './gth-admin.component';
 
 @Injectable({
   providedIn: 'root'
@@ -24,21 +24,27 @@ export class GthAdminService {
     return this.http.get<SubscriptionDto[]>(`${this.apiUrl}/abs/User/GetSubscriptions`, { withCredentials: true });
   }
 
+  getApplications(): Observable<ApplicationDto[]> {
+    return this.http.get<ApplicationDto[]>(`${this.apiUrl}/abs/User/GetApplications`, { withCredentials: true });
+  }
+
   loadAllData(): Observable<{
     usersData: UserDataDto[],
     organizationsData: OrganizationDto[],
     subscriptionsData: SubscriptionDto[],
+    applicationsData: ApplicationDto[],
   }> {
     return forkJoin({
       usersData: this.getUsersData(),
       organizationsData: this.getOrganizations(),
       subscriptionsData: this.getSubscriptions(),
+      applicationsData: this.getApplications(),
     });
   }
 
   updateOrganizations(changedOrganizations: OrganizationDto[]): Observable<any> {
     return from(changedOrganizations).pipe(
-      concatMap(org => 
+      concatMap(org =>
         this.http.put(`${this.apiUrl}/abs/User/UpdateOrganization`, org, { withCredentials: true })
       )
     );
@@ -55,16 +61,16 @@ export class GthAdminService {
 
   updateSubscriptions(changedSubscriptions: SubscriptionDto[]): Observable<any> {
     return from(changedSubscriptions).pipe(
-      concatMap(subscription => 
+      concatMap(subscription =>
         this.http.put(`${this.apiUrl}/abs/User/UpdateSubscription`, subscription, { withCredentials: true })
       )
     );
   }
-  
+
   updateSubscription(id: number, subscription: SubscriptionDto): Observable<any> {
     return this.http.put(`${this.apiUrl}/abs/User/UpdateSubscription`, subscription, { withCredentials: true });
   }
-  
+
   createSubscription(subscription: SubscriptionDto): Observable<SubscriptionDto> {
     return this.http.post<SubscriptionDto>(`${this.apiUrl}/abs/User/AddSubscription`, subscription, { withCredentials: true });
   }
