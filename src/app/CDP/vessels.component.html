@@ -1,0 +1,44 @@
+<div *ngIf="loading" class="loading">
+  <p>Loading Data...</p>
+</div>
+
+<div *ngIf="!loading && dataLoaded">
+  <table mat-table [dataSource]="vesselsData" class="mat-elevation-z8">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let vessel"> {{ vessel.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="imo">
+      <th mat-header-cell *matHeaderCellDef> IMO </th>
+      <td mat-cell *matCellDef="let vessel"> {{ vessel.imo }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="yearBuilt">
+      <th mat-header-cell *matHeaderCellDef> Year Built </th>
+      <td mat-cell *matCellDef="let vessel"> {{ vessel.yearBuilt }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="deadweight">
+      <th mat-header-cell *matHeaderCellDef> Deadweight </th>
+      <td mat-cell *matCellDef="let vessel"> {{ vessel.deadweight }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="grossTonnage">
+      <th mat-header-cell *matHeaderCellDef> Gross Tonnage </th>
+      <td mat-cell *matCellDef="let vessel"> {{ vessel.grossTonnage }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+      <th mat-header-cell *matHeaderCellDef> Action </th>
+      <td mat-cell *matCellDef="let vessel">
+        <button mat-icon-button color="warn" (click)="vessel.deleted ? confirmUndelete(vessel) : confirmDelete(vessel)">
+          <mat-icon>{{ vessel.deleted ? 'restore' : 'delete' }}</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+</div>

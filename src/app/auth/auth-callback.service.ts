@@ -25,7 +25,6 @@ export class AuthCallbackService {
       );
 
       if (response && response.id !== 0) {
-        console.log(response)
         return {
           id: response.id,
           name: response.name,

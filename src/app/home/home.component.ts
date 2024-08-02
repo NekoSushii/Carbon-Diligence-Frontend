@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, NgZone, ChangeDetectorRef, AfterViewInit, AfterViewChecked } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { HomeService } from './home.service';
 import { GthAdminService } from '../gth-admin/gth-admin.service';
@@ -36,7 +36,8 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
     private gthAdminService: GthAdminService,
     private ngZone: NgZone, private cdref: ChangeDetectorRef,
     private snackbarService: SnackbarService,
-    private loadingService: LoadingService) {  }
+    private loadingService: LoadingService,
+    private router: Router) { }
 
   ngOnInit() {
     this.loadUserData();
@@ -119,11 +120,20 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
     const userApplicationIds = userSubscriptions.map(sub => sub.applicationId);
 
     const cards = this.applicationsData.map(app => ({
+      id: app.id,
       title: app.name,
       content: app.description,
       button: userApplicationIds.includes(app.id) ? 'Enter' : 'Subscribe'
     }));
 
     return of(cards);
+  }
+
+  onCardButtonClick(card: any) {
+    if (card.button === 'Enter' && card.id === 1) {
+      this.router.navigate(['/CDP']);
+    } else {
+      console.log(`${card.button} button clicked for application ${card.id}`);
+    }
   }
 }
