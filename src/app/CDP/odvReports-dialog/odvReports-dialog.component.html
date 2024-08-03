@@ -1,0 +1,61 @@
+<div class="dialog-container">
+  <h2 *ngIf="!viewingReport">View ODV Reports</h2>
+  <h2 *ngIf="viewingReport">ODV Noon Report Details</h2>
+
+  <div *ngIf="!viewingReport">
+    <button mat-raised-button color="primary" (click)="openCreateODVReportDialog()">Create New ODV Report</button>
+    <div class="table-container">
+      <table mat-table [dataSource]="odvReports" class="mat-elevation-z8">
+        <ng-container matColumnDef="vesselName">
+          <th mat-header-cell *matHeaderCellDef> Vessel Name </th>
+          <td mat-cell *matCellDef="let report"> {{ getVesselName(report.vesselId) }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef> Start Date </th>
+          <td mat-cell *matCellDef="let report"> {{ report.startDate }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef> End Date </th>
+          <td mat-cell *matCellDef="let report"> {{ report.endDate }} </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let report">
+            <button mat-icon-button *ngIf="report.id" (click)="viewNoonReport(report.id)">
+              <mat-icon>visibility</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </div>
+
+  <div *ngIf="viewingReport">
+    <h3>Report Details</h3>
+    <p><strong>Vessel Name:</strong> {{ getVesselName(viewingReport.odvReportId) }}</p>
+    <p><strong>Timestamp:</strong> {{ viewingReport.timestamp }}</p>
+    <p><strong>Port:</strong> {{ viewingReport.port }}</p>
+    <p><strong>ME Running Hours:</strong> {{ viewingReport.meRunningHours }}</p>
+    <p><strong>Drifting Hours:</strong> {{ viewingReport.driftingHours }}</p>
+    <p><strong>Duration at Sea:</strong> {{ viewingReport.durationSea }}</p>
+    <p><strong>Anchorage Hours:</strong> {{ viewingReport.anchorageHours }}</p>
+    <p><strong>Distance:</strong> {{ viewingReport.distance }}</p>
+    <p><strong>Latitude:</strong> {{ viewingReport.latitude }}</p>
+    <p><strong>Longitude:</strong> {{ viewingReport.logtitude }}</p>
+    <p><strong>Comments:</strong> {{ viewingReport.comments }}</p>
+    <p><strong>Source:</strong> {{ viewingReport.source }}</p>
+    <p><strong>Deleted:</strong> {{ viewingReport.deleted }}</p>
+
+    <button mat-raised-button color="primary" (click)="backToReports()">Back to Reports</button>
+  </div>
+
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Close</button>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="dialog-container">
+  <h2>Create Vessel</h2>
+  <div class="form-container">
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="vessel.name">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>IMO</mat-label>
+      <input matInput [(ngModel)]="vessel.imo">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Year Built</mat-label>
+      <input matInput [(ngModel)]="vessel.yearBuilt">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Deadweight</mat-label>
+      <input matInput [(ngModel)]="vessel.deadweight">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Gross Tonnage</mat-label>
+      <input matInput [(ngModel)]="vessel.grossTonnage">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Vessel Type</mat-label>
+      <mat-select [(ngModel)]="vessel.vesselTypeId">
+        <mat-option *ngFor="let type of vesselTypes" [value]="type.id">
+          {{ type.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Close</button>
+    <button mat-button (click)="saveChanges()">Save</button>
+  </div>
+</div>

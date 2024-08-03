@@ -12,19 +12,88 @@ import { RouterModule } from '@angular/router';
 import { SnackbarService } from '../snackbarService/snackbar.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { VesselsService } from './vessels.service';
+import { EditVesselDialogComponent } from './edit-vessel-dialog/edit-vessel-dialog.component';
+import { CreateVesselDialogComponent } from './create-vessel-dialog/create-vessel-dialog.component';
+import { forkJoin } from 'rxjs';
+import { ODVReportsDialogComponent } from './odvReports-dialog/odvReports-dialog.component';
 
 export interface VesselDto {
   id: number;
   vesselTypeId: number;
-  flagId: number;
+  flagId: number | null;
   imo: number;
   yearBuilt: number;
   name: string;
   deadweight: number;
   grossTonnage: number;
-  created: Date;
-  updated: Date;
   deleted: Date | null;
+}
+
+export interface VesselTypeDto {
+  id: number;
+  name: string;
+  code: string;
+  cargoTypes: string;
+  customTypes: string;
+}
+
+export interface VesselEvent {
+  id: number;
+  vesselId: number;
+  attribute: string;
+  oldValue: string;
+  newValue: string;
+  timestamp: Date;
+}
+
+export interface VesselConsumer {
+  id: number;
+  vesselId: number;
+  name: string;
+  code: string;
+  sfoc: number;
+}
+
+export interface VesselData {
+  id: number;
+  vesselTypeId: number;
+  flagId: number | null;
+  imo: number;
+  yearBuilt: number;
+  name: string;
+  deadweight: number;
+  grossTonnage: number;
+}
+
+export interface ODVReportDto {
+  id: number;
+  vesselId: number;
+  startDate: Date;
+  endDate: Date;
+  deleted: Date | null;
+}
+
+export interface ODVNoonReport {
+  id: number;
+  odvReportId: number;
+  timestamp: Date;
+  port: string;
+  meRunningHours: number;
+  driftingHours: number;
+  durationSea: number;
+  anchorageHours: number;
+  distance: number;
+  latitude: number;
+  logtitude: number;
+  comments: string;
+  source: string;
+  deleted: Date | null;
+}
+
+export interface odvReportCreateDto {
+  vesselId: number;
+  startDate: Date;
+  endDate: Date;
 }
 
 @Component({
@@ -48,6 +117,7 @@ export interface VesselDto {
 })
 export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked {
   vesselsData: VesselDto[] = [];
+  vesselTypes: VesselTypeDto[] = [];
   loading: boolean = true;
   displayedColumns: string[] = ['name', 'imo', 'yearBuilt', 'deadweight', 'grossTonnage', 'action'];
   dataLoaded: boolean = false;
@@ -60,8 +130,7 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
     private snackbarService: SnackbarService,
   ) {}
 
-  ngOnInit() {
-  }
+  ngOnInit() {}
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -69,14 +138,14 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
   }
 
-  ngAfterViewChecked() {
-  }
+  ngAfterViewChecked() {}
 
   loadData() {
     this.vesselsService.loadAllData().subscribe({
       next: (result) => {
         this.ngZone.run(() => {
-          this.vesselsData = result;
+          this.vesselsData = result.vessels;
+          this.vesselTypes = result.vesselTypes;
           this.dataLoaded = true;
           setTimeout(() => {
             this.loading = false;
@@ -100,8 +169,13 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
     this.snackbarService.show('Failed to load data!: ' + message, 'Close', 3000);
   }
 
-  saveChanges(updatedVessel: VesselDto) {
-    this.vesselsService.updateVessel(updatedVessel).subscribe({
+  saveChanges(updatedVessel: VesselData) {
+    const { deleted, ...vesselDto } = {
+      ...updatedVessel,
+      deleted: null
+    };
+
+    this.vesselsService.updateVessel(vesselDto as VesselDto).subscribe({
       next: (response) => {
         this.snackbarService.show('Vessel updated', 'Close', 3000);
         this.loadData();
@@ -126,23 +200,8 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
   }
 
-  confirmUndelete(vessel: VesselDto) {
-    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      width: '250px',
-      data: { message: 'Are you sure you want to restore this vessel?' }
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.undeleteVessel(vessel);
-        this.snackbarService.show('Vessel restored', 'Close', 3000);
-      }
-    });
-  }
-
   deleteVessel(vessel: VesselDto) {
-    const updatedVessel = { ...vessel, deleted: new Date() };
-    this.vesselsService.updateVessel(updatedVessel).subscribe({
+    this.vesselsService.deleteVesselById(vessel.id).subscribe({
       next: (response) => {
         this.loadData();
       },
@@ -152,15 +211,71 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
   }
 
-  undeleteVessel(vessel: VesselDto) {
-    const updatedVessel = { ...vessel, deleted: null };
-    this.vesselsService.updateVessel(updatedVessel).subscribe({
-      next: (response) => {
-        this.loadData();
-      },
-      error: (error) => {
-        console.error('Error undeleting vessel:', error);
+  openEditDialog(vessel: VesselDto) {
+    const vesselData: VesselData = {
+      id: vessel.id,
+      vesselTypeId: vessel.vesselTypeId,
+      flagId: vessel.flagId,
+      imo: vessel.imo,
+      yearBuilt: vessel.yearBuilt,
+      name: vessel.name,
+      deadweight: vessel.deadweight,
+      grossTonnage: vessel.grossTonnage
+    };
+
+    const dialogRef = this.dialog.open(EditVesselDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: vesselData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.saveChanges(result.vessel);
       }
     });
   }
+
+  openCreateVesselDialog() {
+    const dialogRef = this.dialog.open(CreateVesselDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: { vesselTypes: this.vesselTypes }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.vesselsService.createVessel(result.vessel).subscribe({
+          next: (response) => {
+            this.snackbarService.show('Vessel created', 'Close', 3000);
+            this.loadData();
+          },
+          error: (error) => {
+            console.error('Error creating vessel:', error);
+          }
+        });
+      }
+    });
+  }
+
+  openODVReportsDialog(vessel: VesselDto) {
+    const dialogRef = this.dialog.open(ODVReportsDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: { vessel }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Handle any actions if needed after the dialog is closed
+      }
+    });
+  }
+
 }

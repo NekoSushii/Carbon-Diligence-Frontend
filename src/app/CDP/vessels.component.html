@@ -3,10 +3,17 @@
 </div>
 
 <div *ngIf="!loading && dataLoaded">
+  <button mat-raised-button color="primary" (click)="openCreateVesselDialog()">Create Vessel</button>
+
   <table mat-table [dataSource]="vesselsData" class="mat-elevation-z8">
     <ng-container matColumnDef="name">
       <th mat-header-cell *matHeaderCellDef> Name </th>
       <td mat-cell *matCellDef="let vessel"> {{ vessel.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="flagId">
+      <th mat-header-cell *matHeaderCellDef> Country Code </th>
+      <td mat-cell *matCellDef="let vessel"> {{ vessel.flagId }} </td>
     </ng-container>
 
     <ng-container matColumnDef="imo">
@@ -32,8 +39,14 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef> Action </th>
       <td mat-cell *matCellDef="let vessel">
-        <button mat-icon-button color="warn" (click)="vessel.deleted ? confirmUndelete(vessel) : confirmDelete(vessel)">
-          <mat-icon>{{ vessel.deleted ? 'restore' : 'delete' }}</mat-icon>
+        <button mat-icon-button color="accent" (click)="openODVReportsDialog(vessel)">
+          <mat-icon>visibility</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" (click)="openEditDialog(vessel)">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="confirmDelete(vessel)">
+          <mat-icon>{{ 'delete' }}</mat-icon>
         </button>
       </td>
     </ng-container>

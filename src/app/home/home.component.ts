@@ -133,7 +133,6 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
     if (card.button === 'Enter' && card.id === 1) {
       this.router.navigate(['/CDP']);
     } else {
-      console.log(`${card.button} button clicked for application ${card.id}`);
     }
   }
 }

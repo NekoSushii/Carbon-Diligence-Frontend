@@ -1,0 +1,27 @@
+<div class="dialog-container">
+  <h2>Create ODV Report</h2>
+  <div class="form-container">
+    <mat-form-field appearance="fill">
+      <mat-label>Vessel Name</mat-label>
+      <input matInput [value]="vesselName" readonly>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Start Date</mat-label>
+      <input matInput [matDatepicker]="startDatePicker" [(ngModel)]="odvReport.startDate">
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #startDatePicker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>End Date</mat-label>
+      <input matInput [matDatepicker]="endDatePicker" [(ngModel)]="odvReport.endDate">
+      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker #endDatePicker></mat-datepicker>
+    </mat-form-field>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Cancel</button>
+    <button mat-button (click)="onSave()">Save</button>
+  </div>
+</div>
