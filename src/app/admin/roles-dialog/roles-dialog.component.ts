@@ -1,14 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Inject, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { isEqual } from 'lodash';
-import { ResourcesDto, RolesResourcesDto } from '../admin.component';
+import { RolesResourcesDto, ResourcesDto } from '../admin.component';
 import { AdminService } from '../admin.service';
 import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
 
@@ -29,22 +28,37 @@ import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dia
     CreateItemDialogComponent
   ]
 })
-export class RolesDialogComponent {
+export class RolesDialogComponent implements OnInit {
   @Output() dataChanged = new EventEmitter<void>();
 
   displayedColumns: string[] = ['name', 'description', 'resources', 'actions'];
   roles: RolesResourcesDto[] = [];
-  originalRoles: RolesResourcesDto[];
+  resources: ResourcesDto[] = [];
+  originalRoles!: RolesResourcesDto[]; // Definite assignment assertion
 
   constructor(
     public dialogRef: MatDialogRef<RolesDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { roles: RolesResourcesDto[], resources: ResourcesDto[] },
     public dialog: MatDialog,
     private adminService: AdminService,
     private cdr: ChangeDetectorRef
-  ) {
-    this.roles = JSON.parse(JSON.stringify(data.roles));
-    this.originalRoles = JSON.parse(JSON.stringify(data.roles));
+  ) {}
+
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.adminService.loadRolesAndResources().subscribe({
+      next: (result) => {
+        this.roles = result.roles;
+        this.resources = result.resources;
+        this.originalRoles = JSON.parse(JSON.stringify(this.roles));
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading data:', error);
+      }
+    });
   }
 
   onClose(): void {
@@ -53,22 +67,22 @@ export class RolesDialogComponent {
 
   saveChanges(): void {
     const changedRoles = this.roles.filter((role, index) => {
-      return !isEqual(role, this.originalRoles[index]);
+      return JSON.stringify(role) !== JSON.stringify(this.originalRoles[index]);
     });
 
-    // Send changed roles to the server
     if (changedRoles.length > 0) {
       this.adminService.updateRoles(changedRoles).subscribe({
         next: () => {
           this.refreshData();
           this.dataChanged.emit();
+          this.dialogRef.close(changedRoles);
         },
         error: (error) => {
           console.error('Error updating roles:', error);
         }
       });
     } else {
-      this.refreshData();
+      this.dialogRef.close();
     }
   }
 
@@ -79,7 +93,7 @@ export class RolesDialogComponent {
         title: 'Create New Role',
         name: '',
         description: '',
-        options: this.data.resources,
+        options: this.resources,
         selectedOptions: []
       }
     });
@@ -127,6 +141,7 @@ export class RolesDialogComponent {
   }
 
   private refreshData(): void {
+    this.roles = [...this.roles];
     this.originalRoles = JSON.parse(JSON.stringify(this.roles));
     this.cdr.detectChanges();
   }

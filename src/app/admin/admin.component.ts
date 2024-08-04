@@ -71,6 +71,8 @@ export interface ApplicationDto {
     MatIconModule,
     ConfirmDialogComponent,
     UserDialogComponent,
+    RolesDialogComponent,
+    UserGroupDialogComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -138,7 +140,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   showErrorMessage(message: string) {
     this.snackbarService.show('Failed to load data!: ' + message, 'Close', 3000);
   }
-  
+
   getRoleNames(roleIds: number[]): string {
     return roleIds.map(id => this.rolesData.find(role => role.id === id)?.name).filter(name => name).join(', ');
   }
@@ -146,12 +148,12 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   getUserGroupNames(groupIds: number[]): string {
     return groupIds.map(id => this.userGroupsData.find(group => group.id === id)?.name).filter(name => name).join(', ');
   }
-  
+
   openModal(user: UserDataDto) {
     this.selectedUser = { ...user };
     this.selectedRoles = user.roles;
     this.selectedUserGroups = user.userGroups;
-  
+
     const dialogRef = this.dialog.open(UserDialogComponent, {
       width: '80vw',
       height: '80vh',
@@ -165,7 +167,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
         selectedUserGroups: this.selectedUserGroups,
       } as DialogData,
     });
-  
+
     dialogRef.afterClosed().subscribe((result) => {
       if (result) {
         this.selectedUser = result.user;
@@ -175,28 +177,18 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
       }
     });
   }
-  
+
   openRolesDialog() {
     const dialogRef = this.dialog.open(RolesDialogComponent, {
       width: '80vw',
       height: '80vh',
       maxWidth: '80vw',
-      maxHeight: '80vh',
-      data: { roles: this.rolesData, resources: this.resourcesData }
+      maxHeight: '80vh'
     });
 
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
     });
-
-    dialogRef.afterClosed().subscribe((changedRoles: RolesResourcesDto[]) => {
-      if (changedRoles && changedRoles.length > 0) {
-        this.updateRoles(changedRoles);
-      } else {
-        this.loadData();
-      }
-    });
-    
   }
 
   openUserGroupsDialog() {
@@ -204,44 +196,11 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
       width: '80vw',
       height: '80vh',
       maxWidth: '80vw',
-      maxHeight: '80vh',
-      data: { userGroups: this.userGroupsData, applications: this.applicationsData }
+      maxHeight: '80vh'
     });
 
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
-    });
-
-    dialogRef.afterClosed().subscribe((changedUserGroups: UserGroupDto[]) => {
-      if (changedUserGroups && changedUserGroups.length > 0) {
-        this.updateUserGroups(changedUserGroups);
-      } else {
-        this.loadData();
-      }
-    });
-  }
-
-  updateRoles(changedRoles: RolesResourcesDto[]) {
-    this.adminService.updateRoles(changedRoles).subscribe({
-      next: (response) => {
-        this.snackbarService.show('Roles updated', 'Close', 3000);
-        this.loadData();
-      },
-      error: (error) => {
-        console.error('Error updating roles:', error);
-      }
-    });
-  }
-
-  updateUserGroups(changedUserGroups: UserGroupDto[]) {
-    this.adminService.updateUserGroups(changedUserGroups).subscribe({
-      next: (response) => {
-        this.snackbarService.show('UserGroup updated', 'Close', 3000);
-        this.loadData();
-      },
-      error: (error) => {
-        console.error('Error updating user groups:', error);
-      }
     });
   }
 

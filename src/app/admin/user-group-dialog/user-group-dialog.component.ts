@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Inject, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -28,20 +28,37 @@ import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dia
     CreateItemDialogComponent
   ]
 })
-export class UserGroupDialogComponent {
+export class UserGroupDialogComponent implements OnInit {
   @Output() dataChanged = new EventEmitter<void>();
 
   displayedColumns: string[] = ['name', 'description', 'applications', 'actions'];
-  originalUserGroups: UserGroupDto[];
+  userGroups: UserGroupDto[] = [];
+  applications: ApplicationDto[] = [];
+  originalUserGroups!: UserGroupDto[]; // Definite assignment assertion
 
   constructor(
     public dialogRef: MatDialogRef<UserGroupDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { userGroups: UserGroupDto[], applications: ApplicationDto[] },
     public dialog: MatDialog,
     private adminService: AdminService,
     private cdr: ChangeDetectorRef
-  ) {
-    this.originalUserGroups = JSON.parse(JSON.stringify(data.userGroups));
+  ) {}
+
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    this.adminService.loadUserGroupsAndApplications().subscribe({
+      next: (result) => {
+        this.userGroups = result.userGroups;
+        this.applications = result.applications;
+        this.originalUserGroups = JSON.parse(JSON.stringify(this.userGroups));
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading data:', error);
+      }
+    });
   }
 
   onClose(): void {
@@ -49,12 +66,24 @@ export class UserGroupDialogComponent {
   }
 
   saveChanges(): void {
-    const changedUserGroups = this.data.userGroups.filter((group, index) => {
+    const changedUserGroups = this.userGroups.filter((group, index) => {
       return JSON.stringify(group) !== JSON.stringify(this.originalUserGroups[index]);
     });
 
-    this.dialogRef.close(changedUserGroups);
-    this.dataChanged.emit();
+    if (changedUserGroups.length > 0) {
+      this.adminService.updateUserGroups(changedUserGroups).subscribe({
+        next: () => {
+          this.refreshData();
+          this.dataChanged.emit();
+          this.dialogRef.close(changedUserGroups);
+        },
+        error: (error) => {
+          console.error('Error updating user groups:', error);
+        }
+      });
+    } else {
+      this.dialogRef.close();
+    }
   }
 
   createUserGroup(): void {
@@ -64,7 +93,7 @@ export class UserGroupDialogComponent {
         title: 'Create New User Group',
         name: '',
         description: '',
-        options: this.data.applications,
+        options: this.applications,
         selectedOptions: []
       }
     });
@@ -81,7 +110,7 @@ export class UserGroupDialogComponent {
         this.adminService.createUserGroup(newUserGroup).subscribe({
           next: (response) => {
             newUserGroup.id = response.id;
-            this.data.userGroups.push(newUserGroup);
+            this.userGroups.push(newUserGroup);
             this.refreshData();
             this.dataChanged.emit();
           },
@@ -97,9 +126,9 @@ export class UserGroupDialogComponent {
     if (confirm(`Are you sure you want to delete the user group ${userGroup.name}?`)) {
       this.adminService.deleteUserGroup(userGroup.id).subscribe({
         next: () => {
-          const index = this.data.userGroups.indexOf(userGroup);
+          const index = this.userGroups.indexOf(userGroup);
           if (index > -1) {
-            this.data.userGroups.splice(index, 1);
+            this.userGroups.splice(index, 1);
             this.refreshData();
             this.dataChanged.emit();
           }
@@ -112,7 +141,8 @@ export class UserGroupDialogComponent {
   }
 
   private refreshData(): void {
-    this.originalUserGroups = JSON.parse(JSON.stringify(this.data.userGroups));
+    this.userGroups = [...this.userGroups];
+    this.originalUserGroups = JSON.parse(JSON.stringify(this.userGroups));
     this.cdr.detectChanges();
   }
 }

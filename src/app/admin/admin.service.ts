@@ -32,6 +32,20 @@ export class AdminService {
     return this.http.get<ResourcesDto[]>(`${this.apiUrl}/UserManagement/GetResources`, { withCredentials: true });
   }
 
+  loadRolesAndResources(): Observable<{ roles: RolesResourcesDto[], resources: ResourcesDto[] }> {
+    return forkJoin({
+      roles: this.getRoles(),
+      resources: this.getResources()
+    });
+  }
+
+  loadUserGroupsAndApplications(): Observable<{ userGroups: UserGroupDto[], applications: ApplicationDto[] }> {
+    return forkJoin({
+      userGroups: this.getUserGroups(),
+      applications: this.getApplications()
+    });
+  }
+
   loadAllData(): Observable<{
     usersData: UserDataDto[],
     rolesData: RolesResourcesDto[],
@@ -50,7 +64,7 @@ export class AdminService {
 
   updateRoles(changedRoles: RolesResourcesDto[]): Observable<any> {
     return from(changedRoles).pipe(
-      concatMap(roles => 
+      concatMap(roles =>
         this.http.put(`${this.apiUrl}/UserManagement/UpdateRole`, roles, { withCredentials: true })
       )
     );
@@ -58,7 +72,7 @@ export class AdminService {
 
   updateUserGroups(userGroups: UserGroupDto[]): Observable<any> {
     return from(userGroups).pipe(
-      concatMap(userGroup => 
+      concatMap(userGroup =>
         this.http.put(`${this.apiUrl}/UserManagement/UpdateUserGroup`, userGroup, { withCredentials: true })
       )
     );
@@ -67,7 +81,7 @@ export class AdminService {
   createRole(role: RolesResourcesDto): Observable<RolesResourcesDto> {
     return this.http.post<RolesResourcesDto>(`${this.apiUrl}/UserManagement/AddRole`, role, { withCredentials: true });
   }
-  
+
   createUserGroup(userGroup: UserGroupDto): Observable<UserGroupDto> {
     return this.http.post<UserGroupDto>(`${this.apiUrl}/UserManagement/AddUserGroup`, userGroup, { withCredentials: true });
   }
@@ -75,7 +89,7 @@ export class AdminService {
   deleteRole(roleId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/UserManagement/DeleteRole/${roleId}`, { withCredentials: true });
   }
-  
+
   deleteUserGroup(userGroupId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/UserManagement/DeleteUserGroup/${userGroupId}`, { withCredentials: true });
   }

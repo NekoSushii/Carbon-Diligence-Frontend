@@ -29,7 +29,7 @@
           <mat-form-field appearance="fill">
             <mat-label>Resources</mat-label>
             <mat-select [(ngModel)]="role.resources" multiple>
-              <mat-option *ngFor="let resource of data.resources" [value]="resource.id">
+              <mat-option *ngFor="let resource of resources" [value]="resource.id">
                 {{ resource.name }}
               </mat-option>
             </mat-select>
