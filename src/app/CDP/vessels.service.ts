@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { forkJoin, Observable } from 'rxjs';
-import { odvReportCreateDto, ODVReportDto, VesselData, VesselDto, VesselTypeDto } from './vessels.component';
+import { ODVNoonReportData, odvReportCreateDto, ODVReportDto, VesselData, VesselDto, VesselTypeDto } from './vessels.component';
 
 @Injectable({
   providedIn: 'root'
@@ -47,7 +47,16 @@ export class VesselsService {
     return this.http.post(`${this.apiUrl}ODV/AddOdvReport`, odvReport, { withCredentials: true })
   }
 
+  addODVNoonReport(noonReport: ODVNoonReportData): Observable<any> {
+    return this.http.post(`${this.apiUrl}ODV/AddOdvNoonReport`, noonReport, { withCredentials: true })
+  }
+
   deleteVesselById(vesselId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}Vessel/DeleteVessel/${vesselId}`, { withCredentials: true });
   }
+
+  deleteODVReport(odvReportId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}ODV/DeleteOdvReport/${odvReportId}`, { withCredentials: true });
+  }
+
 }

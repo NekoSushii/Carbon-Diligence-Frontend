@@ -73,7 +73,7 @@ export interface ODVReportDto {
   deleted: Date | null;
 }
 
-export interface ODVNoonReport {
+export interface ODVNoonReportDto {
   id: number;
   odvReportId: number;
   timestamp: Date;
@@ -84,10 +84,25 @@ export interface ODVNoonReport {
   anchorageHours: number;
   distance: number;
   latitude: number;
-  logtitude: number;
+  longitude: number;
   comments: string;
   source: string;
   deleted: Date | null;
+}
+
+export interface ODVNoonReportData {
+  odvReportId: number;
+  timestamp: Date;
+  port: string;
+  meRunningHours: number;
+  driftingHours: number;
+  durationSea: number;
+  anchorageHours: number;
+  distance: number;
+  latitude: number;
+  longitude: number;
+  comments: string;
+  source: string;
 }
 
 export interface odvReportCreateDto {

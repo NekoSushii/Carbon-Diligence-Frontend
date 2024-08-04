@@ -35,7 +35,8 @@ export class CreateODVReportDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<CreateODVReportDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { vesselId: number, vesselName: string }
+    @Inject(MAT_DIALOG_DATA) public data: { vesselId: number, vesselName: string },
+    private vesselsService: VesselsService
   ) {
     this.odvReport = {
       id: 0,
@@ -51,8 +52,9 @@ export class CreateODVReportDialogComponent {
     this.dialogRef.close();
   }
 
-  onSave(): void {
-    // Implement save functionality
-    this.dialogRef.close(this.odvReport);
+  onCreate(): void {
+    this.vesselsService.createODVReport(this.odvReport).subscribe(() => {
+      this.dialogRef.close(this.odvReport)
+    });
   }
 }

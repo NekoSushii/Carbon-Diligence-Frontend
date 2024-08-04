@@ -6,10 +6,11 @@ import { ODVReportDto, VesselDto } from '../vessels.component';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { CreateODVNoonDialogComponent } from '../create-odvnoon-dialog/create-odvnoon-dialog.component';
-import { ODVNoonReport } from '../vessels.component';
+import { ODVNoonReportDto } from '../vessels.component';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 
 @Component({
   standalone: true,
@@ -28,7 +29,7 @@ export class ODVReportsDialogComponent implements OnInit {
   displayedColumns: string[] = ['vesselName', 'startDate', 'endDate', 'actions'];
   odvReports: ODVReportDto[] = [];
   vessels: VesselDto[] = [];
-  viewingReport: ODVNoonReport | null = null;
+  viewingReport: ODVNoonReportDto | null = null;
 
   constructor(
     public dialogRef: MatDialogRef<ODVReportsDialogComponent>,
@@ -44,7 +45,9 @@ export class ODVReportsDialogComponent implements OnInit {
 
   loadODVReports() {
     this.vesselsService.getODVReports().subscribe((reports: ODVReportDto[]) => {
+      console.log('ODV Reports:', reports); // Debugging line
       this.odvReports = reports.filter(report => report.vesselId === this.data.vessel.id);
+      console.log('Filtered ODV Reports:', this.odvReports); // Debugging line
     });
   }
 
@@ -60,8 +63,9 @@ export class ODVReportsDialogComponent implements OnInit {
   }
 
   viewNoonReport(reportId: number) {
-    this.vesselsService.getODVNoonReports().subscribe((reports: ODVNoonReport[]) => {
+    this.vesselsService.getODVNoonReports().subscribe((reports: ODVNoonReportDto[]) => {
       this.viewingReport = reports.find(report => report.odvReportId === reportId) || null;
+      console.log('Viewing Report:', this.viewingReport); // Debugging line
     });
   }
 
@@ -81,6 +85,7 @@ export class ODVReportsDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        this.loadODVReports(); // Reload reports after creating a new one
       }
     });
   }
@@ -97,6 +102,21 @@ export class ODVReportsDialogComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         // Handle the result if needed
+      }
+    });
+  }
+
+  deleteReport(reportId: number) {
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      width: '250px',
+      data: { message: 'Are you sure you want to delete this report?' }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.vesselsService.deleteODVReport(reportId).subscribe(() => {
+          this.loadODVReports(); // Reload reports after deletion
+        });
       }
     });
   }
