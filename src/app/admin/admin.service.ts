@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, from } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { ApplicationDto, ResourcesDto, RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
+import { ApplicationDto, CreateUserDto, ResourcesDto, RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
 
 @Injectable({
   providedIn: 'root'
@@ -84,6 +84,19 @@ export class AdminService {
 
   createUserGroup(userGroup: UserGroupDto): Observable<UserGroupDto> {
     return this.http.post<UserGroupDto>(`${this.apiUrl}/UserManagement/AddUserGroup`, userGroup, { withCredentials: true });
+  }
+
+  createUser(newUser: UserDataDto): Observable<CreateUserDto> {
+    const newUserDto = {
+      authorizationId: "",
+      WCN: "",
+      displayName: newUser.name,
+      email: newUser.email,
+      userName: newUser.name,
+      isActive: true,
+      organizationId: 1
+    }
+    return this.http.post<CreateUserDto>(`${this.apiUrl}/User/AddUser`, newUserDto, {withCredentials: true});
   }
 
   deleteRole(roleId: number): Observable<void> {

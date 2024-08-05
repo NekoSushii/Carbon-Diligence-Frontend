@@ -14,7 +14,6 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { VesselsService } from './vessels.service';
 import { EditVesselDialogComponent } from './edit-vessel-dialog/edit-vessel-dialog.component';
 import { CreateVesselDialogComponent } from './create-vessel-dialog/create-vessel-dialog.component';
-import { forkJoin } from 'rxjs';
 import { ODVReportsDialogComponent } from './odvReports-dialog/odvReports-dialog.component';
 
 export interface VesselDto {

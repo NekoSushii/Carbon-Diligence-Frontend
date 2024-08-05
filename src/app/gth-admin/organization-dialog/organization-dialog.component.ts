@@ -13,6 +13,7 @@ import { isEqual } from 'lodash';
 import { CreateOrganizationDialogComponent } from '../create-organization-dialog/create-organization-dialog.component';
 import { OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-organization-dialog',
@@ -45,7 +46,8 @@ export class OrganizationDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { organizations: OrganizationDto[], subscriptions: SubscriptionDto[] },
     public dialog: MatDialog,
     private gthAdminService: GthAdminService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackbarService: SnackbarService
   ) {
     this.organizations = JSON.parse(JSON.stringify(data.organizations));
     this.originalOrganizations = JSON.parse(JSON.stringify(data.organizations));
@@ -70,6 +72,7 @@ export class OrganizationDialogComponent {
           console.error('Error updating organizations:', error);
         }
       });
+      this.snackbarService.show('Organization updated!', 'Close', 3000);
     } else {
       this.refreshData();
     }
@@ -103,6 +106,7 @@ export class OrganizationDialogComponent {
             this.organizations.push(newOrganization);
             this.refreshData();
             this.dataChanged.emit();
+            this.snackbarService.show('Organization created!', 'Close', 3000);
           },
           error: (error) => {
             console.error('Error creating organization:', error);

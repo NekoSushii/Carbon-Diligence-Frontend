@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { RolesResourcesDto, ResourcesDto } from '../admin.component';
 import { AdminService } from '../admin.service';
 import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-roles-dialog',
@@ -40,7 +41,8 @@ export class RolesDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<RolesDialogComponent>,
     public dialog: MatDialog,
     private adminService: AdminService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -76,6 +78,7 @@ export class RolesDialogComponent implements OnInit {
           this.refreshData();
           this.dataChanged.emit();
           this.dialogRef.close(changedRoles);
+          this.snackBarService.show('Changes saved!', "close", 3000);
         },
         error: (error) => {
           console.error('Error updating roles:', error);
@@ -113,6 +116,7 @@ export class RolesDialogComponent implements OnInit {
             this.roles.push(newRole);
             this.refreshData();
             this.dataChanged.emit();
+            this.snackBarService.show('Role created!', "close", 3000);
           },
           error: (error) => {
             console.error('Error creating role:', error);
@@ -131,6 +135,7 @@ export class RolesDialogComponent implements OnInit {
             this.roles.splice(index, 1);
             this.refreshData();
             this.dataChanged.emit();
+            this.snackBarService.show('Role deleted!', "close", 3000);
           }
         },
         error: (error) => {
@@ -141,6 +146,7 @@ export class RolesDialogComponent implements OnInit {
   }
 
   private refreshData(): void {
+    console.log("refreshData");
     this.roles = [...this.roles];
     this.originalRoles = JSON.parse(JSON.stringify(this.roles));
     this.cdr.detectChanges();

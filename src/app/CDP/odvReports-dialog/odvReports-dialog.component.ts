@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   standalone: true,
@@ -35,7 +36,8 @@ export class ODVReportsDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<ODVReportsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private vesselsService: VesselsService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private snackbarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -65,7 +67,6 @@ export class ODVReportsDialogComponent implements OnInit {
   viewNoonReport(reportId: number) {
     this.vesselsService.getODVNoonReports().subscribe((reports: ODVNoonReportDto[]) => {
       this.viewingReport = reports.find(report => report.odvReportId === reportId) || null;
-      console.log('Viewing Report:', this.viewingReport); // Debugging line
     });
   }
 
@@ -101,7 +102,6 @@ export class ODVReportsDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Handle the result if needed
       }
     });
   }
@@ -115,7 +115,8 @@ export class ODVReportsDialogComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
         this.vesselsService.deleteODVReport(reportId).subscribe(() => {
-          this.loadODVReports(); // Reload reports after deletion
+          this.loadODVReports();
+          this.snackbarService.show('Report deleted!', 'Close', 3000);
         });
       }
     });

@@ -13,6 +13,7 @@ import { isEqual } from 'lodash';
 import { CreateSubscriptionDialogComponent } from '../create-subscription-dialog/create-subscription-dialog.component';
 import { ApplicationDto, OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-subscription-dialog',
@@ -47,7 +48,8 @@ export class SubscriptionDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: { subscriptions: SubscriptionDto[], organizations: OrganizationDto[], applications: ApplicationDto[] },
     public dialog: MatDialog,
     private gthAdminService: GthAdminService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackbarService: SnackbarService
   ) {
     this.subscriptions = JSON.parse(JSON.stringify(data.subscriptions));
     this.originalSubscriptions = JSON.parse(JSON.stringify(data.subscriptions));
@@ -69,6 +71,7 @@ export class SubscriptionDialogComponent {
         next: () => {
           this.refreshData();
           this.dataChanged.emit();
+          this.snackbarService.show('Subscription updated!', 'Close', 3000);
         },
         error: (error) => {
           console.error('Error updating subscriptions:', error);
@@ -111,6 +114,7 @@ export class SubscriptionDialogComponent {
             this.subscriptions.push(newSubscription);
             this.refreshData();
             this.dataChanged.emit();
+            this.snackbarService.show('Subscription created!', 'Close', 3000);
           },
           error: (error) => {
             console.error('Error creating subscription:', error);
@@ -127,6 +131,7 @@ export class SubscriptionDialogComponent {
         next: () => {
           this.refreshData();
           this.dataChanged.emit();
+          this.snackbarService.show('Subscription deleted!', 'Close', 3000);
         },
         error: (error) => {
           console.error('Error deleting subscription:', error);
@@ -142,6 +147,7 @@ export class SubscriptionDialogComponent {
         next: () => {
           this.refreshData();
           this.dataChanged.emit();
+          this.snackbarService.show('Subscription restored!', 'Close', 3000);
         },
         error: (error) => {
           console.error('Error restoring subscription:', error);

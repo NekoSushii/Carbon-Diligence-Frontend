@@ -53,6 +53,16 @@ export interface ApplicationDto {
   isActive: boolean;
 }
 
+export interface CreateUserDto {
+  authorizationId: string;
+  WCN: string;
+  displayName: string;
+  email: string;
+  userName: string;
+  isActive: boolean;
+  organizationId: string;
+}
+
 @Component({
   standalone: true,
   selector: 'app-admin',
@@ -201,6 +211,36 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
 
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
+    });
+  }
+
+  openCreateUserDialog() {
+    const dialogRef = this.dialog.open(UserDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: {
+        user: { id: 0, email: '', name: '', roles: [], isActive: true, userGroups: [] },
+        rolesData: this.rolesData,
+        selectedRoles: [],
+        userGroupsData: this.userGroupsData,
+        selectedUserGroups: [],
+      } as DialogData,
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        this.adminService.createUser(result.user).subscribe({
+          next: () => {
+            this.snackbarService.show('User created', 'Close', 3000);
+            this.loadData();
+          },
+          error: (error) => {
+            console.error('Error in Post request for .../api/User/create-user:', error);
+          }
+        });
+      }
     });
   }
 

@@ -10,6 +10,7 @@ import { MatTableModule } from '@angular/material/table';
 import { ApplicationDto, UserGroupDto } from '../admin.component';
 import { AdminService } from '../admin.service';
 import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-user-group-dialog',
@@ -40,7 +41,8 @@ export class UserGroupDialogComponent implements OnInit {
     public dialogRef: MatDialogRef<UserGroupDialogComponent>,
     public dialog: MatDialog,
     private adminService: AdminService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private snackBarService: SnackbarService,
   ) {}
 
   ngOnInit() {
@@ -76,6 +78,7 @@ export class UserGroupDialogComponent implements OnInit {
           this.refreshData();
           this.dataChanged.emit();
           this.dialogRef.close(changedUserGroups);
+          this.snackBarService.show('Changes saved!', "close", 3000);
         },
         error: (error) => {
           console.error('Error updating user groups:', error);
@@ -113,6 +116,7 @@ export class UserGroupDialogComponent implements OnInit {
             this.userGroups.push(newUserGroup);
             this.refreshData();
             this.dataChanged.emit();
+            this.snackBarService.show('User group created!', "close", 3000);
           },
           error: (error) => {
             console.error('Error creating user group:', error);
@@ -131,6 +135,7 @@ export class UserGroupDialogComponent implements OnInit {
             this.userGroups.splice(index, 1);
             this.refreshData();
             this.dataChanged.emit();
+            this.snackBarService.show('User group deleted!', "close", 3000);
           }
         },
         error: (error) => {

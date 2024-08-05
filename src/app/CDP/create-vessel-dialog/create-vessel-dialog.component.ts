@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatIconModule } from '@angular/material/icon';
 import { VesselData, VesselTypeDto } from '../vessels.component';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-create-vessel-dialog',
@@ -41,6 +42,7 @@ export class CreateVesselDialogComponent {
 
   constructor(
     public dialogRef: MatDialogRef<CreateVesselDialogComponent>,
+    private snackbarService: SnackbarService,
     @Inject(MAT_DIALOG_DATA) public data: { vesselTypes: VesselTypeDto[] }
   ) {
     this.vesselTypes = data.vesselTypes;
@@ -51,11 +53,11 @@ export class CreateVesselDialogComponent {
   }
 
   saveChanges(): void {
-    // Convert relevant fields to integers
     this.vessel.imo = parseInt(this.vessel.imo as any, 10);
     this.vessel.yearBuilt = parseInt(this.vessel.yearBuilt as any, 10);
     this.vessel.deadweight = parseInt(this.vessel.deadweight as any, 10);
     this.vessel.grossTonnage = parseInt(this.vessel.grossTonnage as any, 10);
+    this.snackbarService.show('Vessel created', 'Close', 3000);
 
     this.dialogRef.close({ vessel: this.vessel });
   }

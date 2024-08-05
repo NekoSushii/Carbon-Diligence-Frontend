@@ -9,6 +9,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   standalone: true,
@@ -36,7 +37,8 @@ export class CreateODVReportDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<CreateODVReportDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: { vesselId: number, vesselName: string },
-    private vesselsService: VesselsService
+    private vesselsService: VesselsService,
+    private snackbarService: SnackbarService,
   ) {
     this.odvReport = {
       id: 0,
@@ -56,5 +58,6 @@ export class CreateODVReportDialogComponent {
     this.vesselsService.createODVReport(this.odvReport).subscribe(() => {
       this.dialogRef.close(this.odvReport)
     });
+    this.snackbarService.show('User created', 'Close', 3000);
   }
 }
