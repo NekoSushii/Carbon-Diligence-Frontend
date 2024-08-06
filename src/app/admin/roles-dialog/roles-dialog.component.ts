@@ -9,7 +9,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { RolesResourcesDto, ResourcesDto } from '../admin.component';
 import { AdminService } from '../admin.service';
-import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
@@ -25,17 +24,25 @@ import { SnackbarService } from '../../snackbarService/snackbar.service';
     MatInputModule,
     MatSelectModule,
     MatTableModule,
-    MatButtonModule,
-    CreateItemDialogComponent
+    MatButtonModule
   ]
 })
 export class RolesDialogComponent implements OnInit {
   @Output() dataChanged = new EventEmitter<void>();
 
-  displayedColumns: string[] = ['name', 'description', 'resources', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'resources', 'permissions', 'actions'];
   roles: RolesResourcesDto[] = [];
   resources: ResourcesDto[] = [];
-  originalRoles!: RolesResourcesDto[]; // Definite assignment assertion
+  originalRoles!: RolesResourcesDto[];
+  permissionsList: string[] = ['Create', 'Read', 'Update', 'Delete']; // List of all possible permissions
+  newRole: RolesResourcesDto = {
+    id: 0,
+    name: '',
+    description: '',
+    permissions: [],
+    resources: []
+  };
+  viewingCreateRole = false;
 
   constructor(
     public dialogRef: MatDialogRef<RolesDialogComponent>,
@@ -52,7 +59,10 @@ export class RolesDialogComponent implements OnInit {
   loadData() {
     this.adminService.loadRolesAndResources().subscribe({
       next: (result) => {
-        this.roles = result.roles;
+        this.roles = result.roles.map(role => ({
+          ...role,
+          permissions: role.permissions || [] // Ensure permissions property exists
+        }));
         this.resources = result.resources;
         this.originalRoles = JSON.parse(JSON.stringify(this.roles));
         this.cdr.detectChanges();
@@ -73,12 +83,16 @@ export class RolesDialogComponent implements OnInit {
     });
 
     if (changedRoles.length > 0) {
+      changedRoles.forEach(role => {
+        role.permissions = role.permissions.map(permission => permission.trim());
+      });
+
       this.adminService.updateRoles(changedRoles).subscribe({
         next: () => {
           this.refreshData();
           this.dataChanged.emit();
           this.dialogRef.close(changedRoles);
-          this.snackBarService.show('Changes saved!', "close", 3000);
+          this.snackBarService.show('Changes saved!', 'close', 3000);
         },
         error: (error) => {
           console.error('Error updating roles:', error);
@@ -89,41 +103,43 @@ export class RolesDialogComponent implements OnInit {
     }
   }
 
-  createRole(): void {
-    const dialogRef = this.dialog.open(CreateItemDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Create New Role',
-        name: '',
-        description: '',
-        options: this.resources,
-        selectedOptions: []
-      }
-    });
+  viewCreateRole(): void {
+    this.newRole = {
+      id: 0,
+      name: '',
+      description: '',
+      permissions: [],
+      resources: []
+    };
+    this.viewingCreateRole = true;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newRole: RolesResourcesDto = {
-          id: 0,
-          name: result.name,
-          description: result.description,
-          resources: result.selectedOptions
-        };
+  cancelCreateRole(): void {
+    this.viewingCreateRole = false;
+  }
 
-        this.adminService.createRole(newRole).subscribe({
-          next: (response) => {
-            newRole.id = response.id;
-            this.roles.push(newRole);
+  saveNewRole(): void {
+    if (this.newRole.name && this.newRole.description) {
+      this.newRole.permissions = this.newRole.permissions.map(permission => permission.trim());
+      this.adminService.createRole(this.newRole).subscribe({
+        next: (response) => {
+          if (response) {
+            this.newRole.id = response;
+            this.roles.push({ ...this.newRole });
             this.refreshData();
             this.dataChanged.emit();
-            this.snackBarService.show('Role created!', "close", 3000);
-          },
-          error: (error) => {
-            console.error('Error creating role:', error);
+            this.viewingCreateRole = false;
+            this.snackBarService.show('Role created!', 'close', 3000);
+          } else {
+            this.snackBarService.show('Error creating role!', 'close', 3000);
           }
-        });
-      }
-    });
+        },
+        error: (error) => {
+          console.error('Error creating role:', error);
+          this.snackBarService.show('Error creating role!', 'close', 3000);
+        }
+      });
+    }
   }
 
   deleteRole(role: RolesResourcesDto): void {
@@ -135,7 +151,7 @@ export class RolesDialogComponent implements OnInit {
             this.roles.splice(index, 1);
             this.refreshData();
             this.dataChanged.emit();
-            this.snackBarService.show('Role deleted!', "close", 3000);
+            this.snackBarService.show('Role deleted!', 'close', 3000);
           }
         },
         error: (error) => {
@@ -146,9 +162,12 @@ export class RolesDialogComponent implements OnInit {
   }
 
   private refreshData(): void {
-    console.log("refreshData");
     this.roles = [...this.roles];
     this.originalRoles = JSON.parse(JSON.stringify(this.roles));
     this.cdr.detectChanges();
+  }
+
+  comparePermissions(o1: string, o2: string): boolean {
+    return o1 === o2;
   }
 }

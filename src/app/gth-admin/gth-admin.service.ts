@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, forkJoin, from } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
-import { ApplicationDto, OrganizationDto, SubscriptionDto, UserDataDto } from './gth-admin.component';
+import { ApplicationDto, IMODto, OrganizationDto, SubscriptionDto, UserDataDto } from './gth-admin.component';
 
 @Injectable({
   providedIn: 'root'
@@ -26,6 +26,10 @@ export class GthAdminService {
 
   getApplications(): Observable<ApplicationDto[]> {
     return this.http.get<ApplicationDto[]>(`${this.apiUrl}/abs/User/GetApplications`, { withCredentials: true });
+  }
+
+  getImoByOrganization(organizationId: number): Observable<IMODto[]> { // In the future, this will have the organization Id
+    return this.http.get<IMODto[]>(`${this.apiUrl}/Imo/GetImos`, { withCredentials: true });
   }
 
   loadAllData(): Observable<{
@@ -76,6 +80,14 @@ export class GthAdminService {
 
   createOrganization(organization: OrganizationDto): Observable<OrganizationDto> {
     return this.http.post<OrganizationDto>(`${this.apiUrl}/abs/User/AddOrganization`, organization, { withCredentials: true });
+  }
+
+  createImo(organizationId: number, IMOData: IMODto): Observable<number> { // In the future, change to support organization
+    return this.http.post<number>(`${this.apiUrl}/Imo/AddImo`, IMOData, { withCredentials: true });
+  }
+
+  deleteImo(organizationId: number, IMOId: number): Observable<number> { // In the future, change to support organization
+    return this.http.delete<number>(`${this.apiUrl}/Imo/DeleteImo/${IMOId}`, { withCredentials: true });
   }
 
 }

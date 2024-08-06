@@ -1,7 +1,34 @@
 <div class="dialog-container">
   <h2>Manage User Groups</h2>
-  <button mat-button (click)="createUserGroup()">Create New User Group</button>
-  <div class="table-container">
+  <button mat-button (click)="viewCreateUserGroup()" *ngIf="!viewingCreateUserGroup">Create New User Group</button>
+
+  <!-- User Group Creation Form -->
+  <div *ngIf="viewingCreateUserGroup">
+    <h2>Create New User Group</h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="newUserGroup.name">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <input matInput [(ngModel)]="newUserGroup.description">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Applications</mat-label>
+      <mat-select [(ngModel)]="newUserGroup.applications" multiple>
+        <mat-option *ngFor="let app of applications" [value]="app.id">
+          {{ app.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div mat-dialog-actions>
+      <button mat-button (click)="cancelCreateUserGroup()">Cancel</button>
+      <button mat-button (click)="saveNewUserGroup()">Save</button>
+    </div>
+  </div>
+
+  <!-- User Groups Table -->
+  <div *ngIf="!viewingCreateUserGroup" class="table-container">
     <table mat-table [dataSource]="userGroups" class="mat-elevation-z8">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -48,7 +75,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <div mat-dialog-actions>
+
+  <div mat-dialog-actions *ngIf="!viewingCreateUserGroup">
     <button mat-button (click)="onClose()">Close</button>
     <button mat-button (click)="saveChanges()">Save</button>
   </div>

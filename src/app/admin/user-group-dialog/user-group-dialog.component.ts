@@ -9,7 +9,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { ApplicationDto, UserGroupDto } from '../admin.component';
 import { AdminService } from '../admin.service';
-import { CreateItemDialogComponent } from '../create-item-dialog/create-item-dialog.component';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
@@ -25,8 +24,7 @@ import { SnackbarService } from '../../snackbarService/snackbar.service';
     MatInputModule,
     MatSelectModule,
     MatTableModule,
-    MatButtonModule,
-    CreateItemDialogComponent
+    MatButtonModule
   ]
 })
 export class UserGroupDialogComponent implements OnInit {
@@ -35,14 +33,21 @@ export class UserGroupDialogComponent implements OnInit {
   displayedColumns: string[] = ['name', 'description', 'applications', 'actions'];
   userGroups: UserGroupDto[] = [];
   applications: ApplicationDto[] = [];
-  originalUserGroups!: UserGroupDto[]; // Definite assignment assertion
+  originalUserGroups!: UserGroupDto[];
+  viewingCreateUserGroup = false;
+  newUserGroup: UserGroupDto = {
+    id: 0,
+    name: '',
+    description: '',
+    applications: []
+  };
 
   constructor(
     public dialogRef: MatDialogRef<UserGroupDialogComponent>,
     public dialog: MatDialog,
     private adminService: AdminService,
     private cdr: ChangeDetectorRef,
-    private snackBarService: SnackbarService,
+    private snackBarService: SnackbarService
   ) {}
 
   ngOnInit() {
@@ -78,7 +83,7 @@ export class UserGroupDialogComponent implements OnInit {
           this.refreshData();
           this.dataChanged.emit();
           this.dialogRef.close(changedUserGroups);
-          this.snackBarService.show('Changes saved!', "close", 3000);
+          this.snackBarService.show('Changes saved!', 'close', 3000);
         },
         error: (error) => {
           console.error('Error updating user groups:', error);
@@ -89,42 +94,43 @@ export class UserGroupDialogComponent implements OnInit {
     }
   }
 
-  createUserGroup(): void {
-    const dialogRef = this.dialog.open(CreateItemDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Create New User Group',
-        name: '',
-        description: '',
-        options: this.applications,
-        selectedOptions: []
-      }
-    });
+  viewCreateUserGroup(): void {
+    this.newUserGroup = {
+      id: 0,
+      name: '',
+      description: '',
+      applications: []
+    };
+    this.viewingCreateUserGroup = true;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newUserGroup: UserGroupDto = {
-          id: 0,
-          name: result.name,
-          description: result.description,
-          applications: result.selectedOptions
-        };
+  cancelCreateUserGroup(): void {
+    this.viewingCreateUserGroup = false;
+  }
 
-        this.adminService.createUserGroup(newUserGroup).subscribe({
-          next: (response) => {
-            newUserGroup.id = response.id;
-            this.userGroups.push(newUserGroup);
+  saveNewUserGroup(): void {
+    if (this.newUserGroup.name && this.newUserGroup.description) {
+      this.adminService.createUserGroup(this.newUserGroup).subscribe({
+        next: (response) => {
+          if (response) {
+            this.newUserGroup.id = response;
+            this.userGroups.push({ ...this.newUserGroup });
             this.refreshData();
             this.dataChanged.emit();
-            this.snackBarService.show('User group created!', "close", 3000);
-          },
-          error: (error) => {
-            console.error('Error creating user group:', error);
+            this.viewingCreateUserGroup = false;
+            this.snackBarService.show('User group created!', 'close', 3000);
+          } else {
+            this.snackBarService.show('Error creating user group!', 'close', 3000);
           }
-        });
-      }
-    });
+        },
+        error: (error) => {
+          console.error('Error creating user group:', error);
+          this.snackBarService.show('Error creating user group!', 'close', 3000);
+        }
+      });
+    }
   }
+
 
   deleteUserGroup(userGroup: UserGroupDto): void {
     if (confirm(`Are you sure you want to delete the user group ${userGroup.name}?`)) {
@@ -135,7 +141,7 @@ export class UserGroupDialogComponent implements OnInit {
             this.userGroups.splice(index, 1);
             this.refreshData();
             this.dataChanged.emit();
-            this.snackBarService.show('User group deleted!', "close", 3000);
+            this.snackBarService.show('User group deleted!', 'close', 3000);
           }
         },
         error: (error) => {

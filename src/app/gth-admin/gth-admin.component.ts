@@ -14,6 +14,7 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { GthAdminService } from './gth-admin.service';
 import { OrganizationDialogComponent } from './organization-dialog/organization-dialog.component';
 import { SubscriptionDialogComponent } from './subscription-dialog/subscription-dialog.component';
+import { ImoDialogComponent } from './imo-dialog/imo-dialog.component';
 
 export interface UserDataDto {
   id: number;
@@ -46,6 +47,12 @@ export interface ApplicationDto {
     id: number;
     name: string;
     description: string;
+}
+
+export interface IMODto {
+  id: number;
+  imo: number;
+  deleted: Date | null;
 }
 
 @Component({
@@ -240,6 +247,16 @@ export class GthAdminComponent implements OnInit, AfterViewInit, AfterViewChecke
       } else {
         this.loadData();
       }
+    });
+  }
+
+  openImoDialog() {
+    this.dialog.open(ImoDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh',
+      data: { organizations: this.organizationsData }
     });
   }
 

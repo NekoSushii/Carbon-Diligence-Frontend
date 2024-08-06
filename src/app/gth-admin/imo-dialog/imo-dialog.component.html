@@ -1,0 +1,57 @@
+<div class="dialog-container" *ngIf="!creatingImo">
+  <h2>Manage IMO Details</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>Select Organization</mat-label>
+    <mat-select [(ngModel)]="selectedOrganization" (selectionChange)="onOrganizationChange($event.value)">
+      <mat-option *ngFor="let organization of data.organizations" [value]="organization.id">
+        {{ organization.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <button mat-raised-button color="primary" (click)="createImo()" [disabled]="!selectedOrganization">Create IMO</button>
+  <div *ngIf="imos.length > 0" class="table-container">
+    <table mat-table [dataSource]="imos" class="mat-elevation-z8">
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> ID </th>
+        <td mat-cell *matCellDef="let imo"> {{ imo.id }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="imo">
+        <th mat-header-cell *matHeaderCellDef> IMO </th>
+        <td mat-cell *matCellDef="let imo"> {{ imo.imo }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="deleted">
+        <th mat-header-cell *matHeaderCellDef> Deleted </th>
+        <td mat-cell *matCellDef="let imo"> {{ imo.deleted ? (imo.deleted | date) : 'N/A' }} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let imo">
+          <button mat-icon-button color="warn" (click)="deleteImo(imo.id)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </div>
+  <div mat-dialog-actions>
+    <button mat-button (click)="onClose()">Close</button>
+  </div>
+</div>
+
+<div class="dialog-container" *ngIf="creatingImo">
+  <h2>Create IMO</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>IMO</mat-label>
+    <input matInput [(ngModel)]="newImo.imo">
+  </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="cancelNewImo()">Cancel</button>
+    <button mat-button (click)="saveNewImo()">Save</button>
+  </div>
+</div>

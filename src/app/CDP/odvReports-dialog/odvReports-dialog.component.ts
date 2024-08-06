@@ -47,9 +47,7 @@ export class ODVReportsDialogComponent implements OnInit {
 
   loadODVReports() {
     this.vesselsService.getODVReports().subscribe((reports: ODVReportDto[]) => {
-      console.log('ODV Reports:', reports); // Debugging line
       this.odvReports = reports.filter(report => report.vesselId === this.data.vessel.id);
-      console.log('Filtered ODV Reports:', this.odvReports); // Debugging line
     });
   }
 

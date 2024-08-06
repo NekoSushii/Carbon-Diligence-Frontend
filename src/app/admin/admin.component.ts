@@ -29,6 +29,7 @@ export interface RolesResourcesDto {
   id: number;
   name: string;
   description: string;
+  permissions: string[];
   resources: number[];
 }
 

@@ -1,7 +1,42 @@
 <div class="dialog-container">
   <h2>Manage Roles</h2>
-  <button mat-button (click)="createRole()">Create New Role</button>
-  <div class="table-container">
+  <button mat-button (click)="viewCreateRole()">Create New Role</button>
+
+  <!-- Role Creation Form -->
+  <div *ngIf="viewingCreateRole">
+    <h2>Create New Role</h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="newRole.name">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <input matInput [(ngModel)]="newRole.description">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Resources</mat-label>
+      <mat-select [(ngModel)]="newRole.resources" multiple>
+        <mat-option *ngFor="let option of resources" [value]="option.id">
+          {{ option.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Permissions</mat-label>
+      <mat-select [(ngModel)]="newRole.permissions" multiple>
+        <mat-option *ngFor="let permission of permissionsList" [value]="permission">
+          {{ permission }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div mat-dialog-actions>
+      <button mat-button (click)="cancelCreateRole()">Cancel</button>
+      <button mat-button (click)="saveNewRole()">Save</button>
+    </div>
+  </div>
+
+  <!-- Roles Table -->
+  <div *ngIf="!viewingCreateRole" class="table-container">
     <table mat-table [dataSource]="roles" class="mat-elevation-z8">
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Name </th>
@@ -37,6 +72,20 @@
         </td>
       </ng-container>
 
+      <ng-container matColumnDef="permissions">
+        <th mat-header-cell *matHeaderCellDef> Permissions </th>
+        <td mat-cell *matCellDef="let role">
+          <mat-form-field appearance="fill">
+            <mat-label>Permissions</mat-label>
+            <mat-select [(ngModel)]="role.permissions" multiple>
+              <mat-option *ngFor="let permission of permissionsList" [value]="permission">
+                {{ permission }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </td>
+      </ng-container>
+
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let role">
@@ -48,7 +97,7 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
   </div>
-  <div mat-dialog-actions>
+  <div *ngIf="!viewingCreateRole" mat-dialog-actions>
     <button mat-button (click)="onClose()">Close</button>
     <button mat-button (click)="saveChanges()">Save</button>
   </div>

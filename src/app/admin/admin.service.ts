@@ -1,8 +1,15 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, from } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
+import { Observable, forkJoin, from, of } from 'rxjs';
+import { catchError, concatMap, map } from 'rxjs/operators';
 import { ApplicationDto, CreateUserDto, ResourcesDto, RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
+
+export interface CreateRoleDto {
+  name: string;
+  description: string;
+  permissions: string[];
+  resources: number[];
+}
 
 @Injectable({
   providedIn: 'root'
@@ -78,12 +85,13 @@ export class AdminService {
     );
   }
 
-  createRole(role: RolesResourcesDto): Observable<RolesResourcesDto> {
-    return this.http.post<RolesResourcesDto>(`${this.apiUrl}/UserManagement/AddRole`, role, { withCredentials: true });
+  createRole(role: RolesResourcesDto): Observable<number> {
+    return this.http.post<number>(`${this.apiUrl}/UserManagement/AddRole`, role, { withCredentials: true });
   }
 
-  createUserGroup(userGroup: UserGroupDto): Observable<UserGroupDto> {
-    return this.http.post<UserGroupDto>(`${this.apiUrl}/UserManagement/AddUserGroup`, userGroup, { withCredentials: true });
+
+  createUserGroup(userGroup: UserGroupDto): Observable<number> {
+    return this.http.post<number>(`${this.apiUrl}/UserManagement/AddUserGroup`, userGroup, { withCredentials: true });
   }
 
   createUser(newUser: UserDataDto): Observable<CreateUserDto> {
