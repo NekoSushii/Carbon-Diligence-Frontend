@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { AfterViewChecked, AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -12,9 +14,9 @@ import { RouterModule } from '@angular/router';
 import { SnackbarService } from '../snackbarService/snackbar.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { GthAdminService } from './gth-admin.service';
+import { ImoDialogComponent } from './imo-dialog/imo-dialog.component';
 import { OrganizationDialogComponent } from './organization-dialog/organization-dialog.component';
 import { SubscriptionDialogComponent } from './subscription-dialog/subscription-dialog.component';
-import { ImoDialogComponent } from './imo-dialog/imo-dialog.component';
 
 export interface UserDataDto {
   id: number;
@@ -41,6 +43,8 @@ export interface SubscriptionDto {
   costPerLicense: number;
   organizationId: number;
   applicationId: number;
+  dateFrom: Date;
+  dateTo: Date;
 }
 
 export interface ApplicationDto {
@@ -71,6 +75,8 @@ export interface IMODto {
     MatFormFieldModule,
     MatTableModule,
     MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

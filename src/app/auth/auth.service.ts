@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { UserManager, User } from 'oidc-client-ts';
 import { Router } from '@angular/router';
+import { User, UserManager } from 'oidc-client-ts';
 
 @Injectable({
   providedIn: 'root',

@@ -109,23 +109,37 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
     if (!this.userData || !this.userData.organizationId) {
       return of([]);
     }
-
+  
     const userOrg = this.organizationsData.find(org => org.id === this.userData.organizationId);
     if (!userOrg) {
       console.error('No organization found for user');
       return of([]);
     }
-
+  
+    const currentDate = new Date();
     const userSubscriptions = this.subscriptionsData.filter(sub => sub.organizationId === this.userData.organizationId);
     const userApplicationIds = userSubscriptions.map(sub => sub.applicationId);
-
-    const cards = this.applicationsData.map(app => ({
-      id: app.id,
-      title: app.name,
-      content: app.description,
-      button: userApplicationIds.includes(app.id) ? 'Enter' : 'Subscribe'
-    }));
-
+  
+    const cards = this.applicationsData.map(app => {
+      const subscription = userSubscriptions.find(sub => sub.applicationId === app.id);
+      let buttonStatus = 'Subscribe';
+  
+      if (subscription) {
+        if (currentDate >= new Date(subscription.dateFrom) && currentDate <= new Date(subscription.dateTo)) {
+          buttonStatus = 'Enter';
+        } else {
+          buttonStatus = 'Subscription Ended';
+        }
+      }
+  
+      return {
+        id: app.id,
+        title: app.name,
+        content: app.description,
+        button: buttonStatus
+      };
+    });
+  
     return of(cards);
   }
 

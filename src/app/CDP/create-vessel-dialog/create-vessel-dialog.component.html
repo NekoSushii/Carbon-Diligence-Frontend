@@ -8,7 +8,11 @@
 
     <mat-form-field appearance="fill">
       <mat-label>IMO</mat-label>
-      <input matInput [(ngModel)]="vessel.imo">
+      <mat-select [(ngModel)]="vessel.imo">
+        <mat-option *ngFor="let imo of imos" [value]="imo.imo">
+          {{ imo.imo }}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field appearance="fill">

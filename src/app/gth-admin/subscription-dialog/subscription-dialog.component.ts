@@ -3,6 +3,8 @@ import { ChangeDetectorRef, Component, EventEmitter, Inject, Output } from '@ang
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
@@ -10,10 +12,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { isEqual } from 'lodash';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 import { CreateSubscriptionDialogComponent } from '../create-subscription-dialog/create-subscription-dialog.component';
 import { ApplicationDto, OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
-import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-subscription-dialog',
@@ -31,13 +33,18 @@ import { SnackbarService } from '../../snackbarService/snackbar.service';
     MatButtonModule,
     MatCheckboxModule,
     CreateSubscriptionDialogComponent,
-    MatIconModule
+    MatIconModule,
+    MatDatepickerModule,
+    MatNativeDateModule
+  ],
+  providers: [
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
   ]
 })
 export class SubscriptionDialogComponent {
   @Output() dataChanged = new EventEmitter<void>();
 
-  displayedColumns: string[] = ['name', 'description', 'costPerLicense', 'organizationId', 'applicationId', 'isActive', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'costPerLicense', 'organizationId', 'applicationId', 'dateFrom', 'dateTo', 'isActive'];
   subscriptions: SubscriptionDto[] = [];
   originalSubscriptions: SubscriptionDto[];
   organizations: OrganizationDto[] = [];
@@ -55,6 +62,11 @@ export class SubscriptionDialogComponent {
     this.originalSubscriptions = JSON.parse(JSON.stringify(data.subscriptions));
     this.organizations = data.organizations;
     this.applications = data.applications;
+  }
+
+  isWithinDateRange(dateFrom: Date, dateTo: Date): boolean {
+    const currentDate = new Date();
+    return currentDate >= new Date(dateFrom) && currentDate <= new Date(dateTo);
   }
 
   onClose(): void {
@@ -92,6 +104,8 @@ export class SubscriptionDialogComponent {
         costPerLicense: 0,
         organizationId: null,
         applicationId: null,
+        dateFrom: null,
+        dateTo: null,
         organizations: this.organizations,
         applications: this.applications
       }
@@ -106,6 +120,8 @@ export class SubscriptionDialogComponent {
           costPerLicense: result.costPerLicense,
           organizationId: result.organizationId,
           applicationId: result.applicationId,
+          dateFrom: result.dateFrom,
+          dateTo: result.dateTo
         };
 
         this.gthAdminService.createSubscription(newSubscription).subscribe({

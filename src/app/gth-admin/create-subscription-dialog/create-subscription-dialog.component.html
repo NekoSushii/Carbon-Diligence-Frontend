@@ -28,6 +28,18 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Date From</mat-label>
+    <input matInput [matDatepicker]="picker1" [(ngModel)]="data.dateFrom">
+    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+    <mat-datepicker #picker1></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Date To</mat-label>
+    <input matInput [matDatepicker]="picker2" [(ngModel)]="data.dateTo">
+    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+    <mat-datepicker #picker2></mat-datepicker>
+  </mat-form-field>
   <div mat-dialog-actions>
     <button mat-button (click)="onClose()">Cancel</button>
     <button mat-button (click)="onSave()">Save</button>

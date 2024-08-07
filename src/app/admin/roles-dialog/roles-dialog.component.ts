@@ -30,9 +30,9 @@ import { AdminService } from '../admin.service';
 export class RolesDialogComponent implements OnInit {
   @Output() dataChanged = new EventEmitter<void>();
 
-  displayedColumns: string[] = ['name', 'description', 'resources', 'permissions', 'actions'];
+  displayedColumns: string[] = ['name', 'description', 'vessels', 'permissions', 'actions'];
   roles: RolesVesselsDto[] = [];
-  resources: VesselDto[] = [];
+  vessels: VesselDto[] = [];
   originalRoles!: RolesVesselsDto[];
   permissionsList: string[] = ['Create', 'Read', 'Update', 'Delete'];
   newRole: RolesVesselsDto = {
@@ -63,7 +63,7 @@ export class RolesDialogComponent implements OnInit {
           ...role,
           permissions: role.permissions || []
         }));
-        this.resources = result.vessels;
+        this.vessels = result.vessels;
         this.originalRoles = JSON.parse(JSON.stringify(this.roles));
         this.cdr.detectChanges();
       },

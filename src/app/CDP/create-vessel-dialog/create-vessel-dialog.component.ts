@@ -1,14 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { MatIconModule } from '@angular/material/icon';
-import { VesselData, VesselTypeDto } from '../vessels.component';
+import { IMODto } from '../../gth-admin/gth-admin.component';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
+import { VesselData, VesselTypeDto } from '../vessels.component';
+import { VesselsService } from '../vessels.service';
 
 @Component({
   selector: 'app-create-vessel-dialog',
@@ -26,7 +28,7 @@ import { SnackbarService } from '../../snackbarService/snackbar.service';
     MatIconModule,
   ]
 })
-export class CreateVesselDialogComponent {
+export class CreateVesselDialogComponent implements OnInit {
   vessel: VesselData = {
     id: 0,
     vesselTypeId: 0,
@@ -39,13 +41,30 @@ export class CreateVesselDialogComponent {
   };
 
   vesselTypes: VesselTypeDto[] = [];
+  imos: IMODto[] = [];
 
   constructor(
     public dialogRef: MatDialogRef<CreateVesselDialogComponent>,
     private snackbarService: SnackbarService,
+    private vesselsService: VesselsService,
     @Inject(MAT_DIALOG_DATA) public data: { vesselTypes: VesselTypeDto[] }
   ) {
     this.vesselTypes = data.vesselTypes;
+  }
+
+  ngOnInit() {
+    this.fetchIMOs();
+  }
+
+  fetchIMOs() {
+    this.vesselsService.getIMOs().subscribe({
+      next: (imos) => {
+        this.imos = imos;
+      },
+      error: (error) => {
+        console.error('Error fetching IMOs:', error);
+      }
+    });
   }
 
   onClose(): void {
