@@ -28,7 +28,7 @@ export class GthAdminService {
     return this.http.get<ApplicationDto[]>(`${this.apiUrl}/abs/User/GetApplications`, { withCredentials: true });
   }
 
-  getImoByOrganization(organizationId: number): Observable<IMODto[]> { // In the future, this will have the organization Id
+  getImoByOrganization(organizationId: number): Observable<IMODto[]> {
     return this.http.get<IMODto[]>(`${this.apiUrl}/Imo/GetImos`, { withCredentials: true });
   }
 

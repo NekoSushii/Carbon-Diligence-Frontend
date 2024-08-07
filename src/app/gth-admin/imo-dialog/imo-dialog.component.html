@@ -21,11 +21,6 @@
         <td mat-cell *matCellDef="let imo"> {{ imo.imo }} </td>
       </ng-container>
 
-      <ng-container matColumnDef="deleted">
-        <th mat-header-cell *matHeaderCellDef> Deleted </th>
-        <td mat-cell *matCellDef="let imo"> {{ imo.deleted ? (imo.deleted | date) : 'N/A' }} </td>
-      </ng-container>
-
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef> Action </th>
         <td mat-cell *matCellDef="let imo">

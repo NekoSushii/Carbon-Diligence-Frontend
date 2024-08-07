@@ -7,9 +7,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { RolesResourcesDto, ResourcesDto } from '../admin.component';
-import { AdminService } from '../admin.service';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
+import { RolesVesselsDto, VesselDto } from '../admin.component';
+import { AdminService } from '../admin.service';
 
 @Component({
   selector: 'app-roles-dialog',
@@ -31,16 +31,16 @@ export class RolesDialogComponent implements OnInit {
   @Output() dataChanged = new EventEmitter<void>();
 
   displayedColumns: string[] = ['name', 'description', 'resources', 'permissions', 'actions'];
-  roles: RolesResourcesDto[] = [];
-  resources: ResourcesDto[] = [];
-  originalRoles!: RolesResourcesDto[];
-  permissionsList: string[] = ['Create', 'Read', 'Update', 'Delete']; // List of all possible permissions
-  newRole: RolesResourcesDto = {
+  roles: RolesVesselsDto[] = [];
+  resources: VesselDto[] = [];
+  originalRoles!: RolesVesselsDto[];
+  permissionsList: string[] = ['Create', 'Read', 'Update', 'Delete'];
+  newRole: RolesVesselsDto = {
     id: 0,
     name: '',
     description: '',
     permissions: [],
-    resources: []
+    vessels: []
   };
   viewingCreateRole = false;
 
@@ -57,13 +57,13 @@ export class RolesDialogComponent implements OnInit {
   }
 
   loadData() {
-    this.adminService.loadRolesAndResources().subscribe({
+    this.adminService.loadRolesAndVessels().subscribe({
       next: (result) => {
         this.roles = result.roles.map(role => ({
           ...role,
-          permissions: role.permissions || [] // Ensure permissions property exists
+          permissions: role.permissions || []
         }));
-        this.resources = result.resources;
+        this.resources = result.vessels;
         this.originalRoles = JSON.parse(JSON.stringify(this.roles));
         this.cdr.detectChanges();
       },
@@ -109,7 +109,7 @@ export class RolesDialogComponent implements OnInit {
       name: '',
       description: '',
       permissions: [],
-      resources: []
+      vessels: []
     };
     this.viewingCreateRole = true;
   }
@@ -142,7 +142,7 @@ export class RolesDialogComponent implements OnInit {
     }
   }
 
-  deleteRole(role: RolesResourcesDto): void {
+  deleteRole(role: RolesVesselsDto): void {
     if (confirm(`Are you sure you want to delete the role ${role.name}?`)) {
       this.adminService.deleteRole(role.id).subscribe({
         next: () => {

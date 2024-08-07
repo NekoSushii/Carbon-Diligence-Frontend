@@ -8,11 +8,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatGridListModule } from '@angular/material/grid-list';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { RolesResourcesDto, UserDataDto, UserGroupDto } from '../admin.component';
+import { RolesVesselsDto, UserDataDto, UserGroupDto } from '../admin.component';
 
 export interface DialogData {
   user: UserDataDto;
-  rolesData: RolesResourcesDto[];
+  rolesData: RolesVesselsDto[];
   selectedRoles: number[];
   userGroupsData: UserGroupDto[];
   selectedUserGroups: number[];

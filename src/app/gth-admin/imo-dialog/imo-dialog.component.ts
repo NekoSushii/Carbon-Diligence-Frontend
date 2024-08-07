@@ -1,15 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
+import { IMODto, OrganizationDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
-import { OrganizationDto, IMODto } from '../gth-admin.component';
 
 @Component({
   standalone: true,
@@ -31,7 +31,7 @@ import { OrganizationDto, IMODto } from '../gth-admin.component';
 export class ImoDialogComponent implements OnInit {
   selectedOrganization: number | null = null;
   imos: IMODto[] = [];
-  displayedColumns: string[] = ['id', 'imo', 'deleted', 'action'];
+  displayedColumns: string[] = ['id', 'imo', 'action'];
   creatingImo: boolean = false;
   newImo: IMODto = { id: 0, imo: 0, deleted: null };
 

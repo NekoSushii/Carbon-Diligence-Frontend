@@ -25,19 +25,23 @@ export interface UserDataDto {
   userGroups: number[];
 }
 
-export interface RolesResourcesDto {
+export interface RolesVesselsDto {
   id: number;
   name: string;
   description: string;
   permissions: string[];
-  resources: number[];
+  vessels: number[];
 }
 
-export interface ResourcesDto {
+export interface VesselDto {
   id: number;
+  vesselTypeId: number;
+  flagId?: number;
+  imo: number;
+  yearBuilt: number;
   name: string;
-  description: string;
-  status: string;
+  deadweight: number;
+  grossTonnage: number;
 }
 
 export interface UserGroupDto {
@@ -89,10 +93,10 @@ export interface CreateUserDto {
 })
 export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
   usersData: UserDataDto[] = [];
-  rolesData: RolesResourcesDto[] = [];
+  rolesData: RolesVesselsDto[] = [];
   userGroupsData: UserGroupDto[] = [];
   applicationsData: ApplicationDto[] = [];
-  resourcesData: ResourcesDto[] = [];
+  vesselsData: VesselDto[] = [];
   selectedUser: UserDataDto = { id: 0, email: '', name: '', roles: [], isActive: true, userGroups: [] };
   selectedRoles: number[] = [];
   selectedUserGroups: number[] = [];
@@ -128,7 +132,7 @@ export class AdminComponent implements OnInit, AfterViewInit, AfterViewChecked {
           this.rolesData = result.rolesData;
           this.userGroupsData = result.userGroupsData;
           this.applicationsData = result.applicationsData;
-          this.resourcesData = result.resourcesData;
+          this.vesselsData = result.vesselsData;
           this.dataLoaded = true;
           setTimeout(() => {
             this.loading = false;

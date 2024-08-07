@@ -1,17 +1,15 @@
-import { Component, Inject, OnInit } from '@angular/core';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VesselsService } from '../vessels.service';
-import { CreateODVReportDialogComponent } from '../create-odvReport-dialog/create-odvReport-dialog.component';
-import { ODVReportDto, VesselDto } from '../vessels.component';
-import { MatTableModule } from '@angular/material/table';
-import { MatIconModule } from '@angular/material/icon';
-import { CreateODVNoonDialogComponent } from '../create-odvnoon-dialog/create-odvnoon-dialog.component';
-import { ODVNoonReportDto } from '../vessels.component';
 import { CommonModule } from '@angular/common';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
-import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTableModule } from '@angular/material/table';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
+import { ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { CreateODVNoonDialogComponent } from '../create-odvnoon-dialog/create-odvnoon-dialog.component';
+import { CreateODVReportDialogComponent } from '../create-odvReport-dialog/create-odvReport-dialog.component';
+import { ODVNoonReportDto, ODVReportDto, VesselDto } from '../vessels.component';
+import { VesselsService } from '../vessels.service';
 
 @Component({
   standalone: true,
@@ -84,7 +82,7 @@ export class ODVReportsDialogComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.loadODVReports(); // Reload reports after creating a new one
+        this.loadODVReports();
       }
     });
   }

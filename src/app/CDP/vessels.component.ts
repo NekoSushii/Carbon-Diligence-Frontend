@@ -11,10 +11,10 @@ import { MatTableModule } from '@angular/material/table';
 import { RouterModule } from '@angular/router';
 import { SnackbarService } from '../snackbarService/snackbar.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
-import { VesselsService } from './vessels.service';
-import { EditVesselDialogComponent } from './edit-vessel-dialog/edit-vessel-dialog.component';
 import { CreateVesselDialogComponent } from './create-vessel-dialog/create-vessel-dialog.component';
+import { EditVesselDialogComponent } from './edit-vessel-dialog/edit-vessel-dialog.component';
 import { ODVReportsDialogComponent } from './odvReports-dialog/odvReports-dialog.component';
+import { VesselsService } from './vessels.service';
 
 export interface VesselDto {
   id: number;
@@ -287,7 +287,6 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Handle any actions if needed after the dialog is closed
       }
     });
   }

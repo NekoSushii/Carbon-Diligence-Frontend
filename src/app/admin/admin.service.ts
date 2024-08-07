@@ -1,8 +1,8 @@
-import { HttpClient, HttpResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, forkJoin, from, of } from 'rxjs';
-import { catchError, concatMap, map } from 'rxjs/operators';
-import { ApplicationDto, CreateUserDto, ResourcesDto, RolesResourcesDto, UserDataDto, UserGroupDto } from './admin.component';
+import { Observable, forkJoin, from } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
+import { ApplicationDto, CreateUserDto, RolesVesselsDto, UserDataDto, UserGroupDto, VesselDto } from './admin.component';
 
 export interface CreateRoleDto {
   name: string;
@@ -23,8 +23,8 @@ export class AdminService {
     return this.http.get<UserDataDto[]>(`${this.apiUrl}/User/GetUsers`, { withCredentials: true });
   }
 
-  getRoles(): Observable<RolesResourcesDto[]> {
-    return this.http.get<RolesResourcesDto[]>(`${this.apiUrl}/UserManagement/GetRoles`, { withCredentials: true });
+  getRoles(): Observable<RolesVesselsDto[]> {
+    return this.http.get<RolesVesselsDto[]>(`${this.apiUrl}/UserManagement/GetRoles`, { withCredentials: true });
   }
 
   getUserGroups(): Observable<UserGroupDto[]> {
@@ -35,14 +35,14 @@ export class AdminService {
     return this.http.get<ApplicationDto[]>(`${this.apiUrl}/UserManagement/GetApplications`, { withCredentials: true });
   }
 
-  getResources(): Observable<ResourcesDto[]> {
-    return this.http.get<ResourcesDto[]>(`${this.apiUrl}/UserManagement/GetResources`, { withCredentials: true });
+  getVessels(): Observable<VesselDto[]> {
+    return this.http.get<VesselDto[]>(`${this.apiUrl}/Vessel/GetVessels`, { withCredentials: true });
   }
 
-  loadRolesAndResources(): Observable<{ roles: RolesResourcesDto[], resources: ResourcesDto[] }> {
+  loadRolesAndVessels(): Observable<{ roles: RolesVesselsDto[], vessels: VesselDto[] }> {
     return forkJoin({
       roles: this.getRoles(),
-      resources: this.getResources()
+      vessels: this.getVessels()
     });
   }
 
@@ -55,21 +55,21 @@ export class AdminService {
 
   loadAllData(): Observable<{
     usersData: UserDataDto[],
-    rolesData: RolesResourcesDto[],
+    rolesData: RolesVesselsDto[],
     userGroupsData: UserGroupDto[],
     applicationsData: ApplicationDto[],
-    resourcesData: ResourcesDto[]
+    vesselsData: VesselDto[]
   }> {
     return forkJoin({
       usersData: this.getUsersData(),
       rolesData: this.getRoles(),
       userGroupsData: this.getUserGroups(),
       applicationsData: this.getApplications(),
-      resourcesData: this.getResources()
+      vesselsData: this.getVessels()
     });
   }
 
-  updateRoles(changedRoles: RolesResourcesDto[]): Observable<any> {
+  updateRoles(changedRoles: RolesVesselsDto[]): Observable<any> {
     return from(changedRoles).pipe(
       concatMap(roles =>
         this.http.put(`${this.apiUrl}/UserManagement/UpdateRole`, roles, { withCredentials: true })
@@ -85,7 +85,7 @@ export class AdminService {
     );
   }
 
-  createRole(role: RolesResourcesDto): Observable<number> {
+  createRole(role: RolesVesselsDto): Observable<number> {
     return this.http.post<number>(`${this.apiUrl}/UserManagement/AddRole`, role, { withCredentials: true });
   }
 

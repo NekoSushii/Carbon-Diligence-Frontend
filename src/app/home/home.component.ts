@@ -1,14 +1,14 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, NgZone, ChangeDetectorRef, AfterViewInit, AfterViewChecked } from '@angular/core';
+import { AfterViewChecked, AfterViewInit, ChangeDetectorRef, Component, NgZone, OnInit } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatGridListModule } from '@angular/material/grid-list';
-import { RouterModule, Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { HomeService } from './home.service';
-import { GthAdminService } from '../gth-admin/gth-admin.service';
 import { ApplicationDto, OrganizationDto, SubscriptionDto, UserDataDto } from '../gth-admin/gth-admin.component';
-import { SnackbarService } from '../snackbarService/snackbar.service';
+import { GthAdminService } from '../gth-admin/gth-admin.service';
 import { LoadingService } from '../loading-screen/loading.service';
+import { SnackbarService } from '../snackbarService/snackbar.service';
+import { HomeService } from './home.service';
 
 @Component({
   selector: 'app-home',
@@ -54,7 +54,7 @@ export class HomeComponent implements OnInit, AfterViewInit, AfterViewChecked {
       const data = await this.homeService.getUsersData().toPromise();
       this.ngZone.run(() => {
         if (data) {
-          this.userData = data; // Single user data object
+          this.userData = data;
           this.loadData();
         } else {
           console.error('No user data available');
