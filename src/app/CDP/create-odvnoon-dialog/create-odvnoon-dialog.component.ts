@@ -1,15 +1,16 @@
-import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VesselsService } from '../vessels.service';
-import { ODVNoonReportData } from '../vessels.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatLabel } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
+import { Component, Inject, OnInit } from '@angular/core';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInput } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { NgxMatSelectSearchModule } from 'ngx-mat-select-search';
+import { map, startWith } from 'rxjs/operators';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
+import { ODVNoonReportData, portDto } from '../vessels.component';
+import { VesselsService } from '../vessels.service';
 
 @Component({
   standalone: true,
@@ -18,19 +19,23 @@ import { SnackbarService } from '../../snackbarService/snackbar.service';
   styleUrls: ['./create-odvnoon-dialog.component.css'],
   imports: [
     MatFormFieldModule,
-    MatLabel,
     MatInputModule,
     MatDatepickerModule,
-    MatInput,
+    MatNativeDateModule,
+    MatSelectModule,
     FormsModule,
-    MatNativeDateModule
+    ReactiveFormsModule,
+    NgxMatSelectSearchModule
   ],
   providers: [
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' }
   ]
 })
-export class CreateODVNoonDialogComponent {
+export class CreateODVNoonDialogComponent implements OnInit {
   noonReport: ODVNoonReportData;
+  ports: portDto[] = [];
+  filteredPorts: portDto[] = [];
+  portControl = new FormControl();
 
   constructor(
     public dialogRef: MatDialogRef<CreateODVNoonDialogComponent>,
@@ -52,6 +57,25 @@ export class CreateODVNoonDialogComponent {
       comments: '',
       source: '',
     };
+  }
+
+  ngOnInit(): void {
+    this.vesselsService.getPorts().subscribe(ports => {
+      this.ports = ports;
+      this.filteredPorts = ports;
+    });
+
+    this.portControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filterPorts(value))
+    ).subscribe(filteredPorts => {
+      this.filteredPorts = filteredPorts;
+    });
+  }
+
+  private _filterPorts(value: string): portDto[] {
+    const filterValue = value.toLowerCase();
+    return this.ports.filter(port => port.name.toLowerCase().includes(filterValue));
   }
 
   onClose(): void {

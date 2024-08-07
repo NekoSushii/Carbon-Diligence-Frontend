@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
+import { RolesVesselsDto } from '../admin/admin.component';
 import { IMODto } from '../gth-admin/gth-admin.component';
-import { ODVNoonReportData, odvReportCreateDto, VesselData, VesselDto, VesselTypeDto } from './vessels.component';
+import { ODVNoonReportData, odvReportCreateDto, portDto, VesselData, VesselDto, VesselTypeDto } from './vessels.component';
 
 @Injectable({
   providedIn: 'root'
@@ -40,6 +41,14 @@ export class VesselsService {
     return this.http.get(`${this.apiUrl}ODV/GetOdvNoonReports`, { withCredentials: true })
   }
 
+  getPorts(): Observable<portDto[]>{
+    return this.http.get<portDto[]>(`${this.apiUrl}Port/GetPorts`, { withCredentials: true })
+  }
+
+  getRoles(): Observable<RolesVesselsDto[]> {
+    return this.http.get<RolesVesselsDto[]>(`${this.apiUrl}UserManagement/GetRoles`, { withCredentials: true });
+  }
+  
   updateVessel(vessel: VesselData): Observable<any> {
     return this.http.put(`${this.apiUrl}Vessel/UpdateVessel/${vessel.id}`, vessel, { withCredentials: true });
   }

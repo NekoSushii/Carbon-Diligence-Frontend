@@ -7,42 +7,59 @@
       <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Port</mat-label>
-      <input matInput [(ngModel)]="noonReport.port" name="port" required>
+      <mat-select [(ngModel)]="noonReport.port" name="port" required>
+        <mat-option>
+          <ngx-mat-select-search [formControl]="portControl" placeholderLabel="Search ports"></ngx-mat-select-search>
+        </mat-option>
+        <mat-option *ngFor="let port of filteredPorts" [value]="port.name">
+          {{ port.name }}
+        </mat-option>
+      </mat-select>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>ME Running Hours</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.meRunningHours" name="meRunningHours" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Drifting Hours</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.driftingHours" name="driftingHours" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Duration at Sea</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.durationSea" name="durationSea" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Anchorage Hours</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.anchorageHours" name="anchorageHours" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Distance</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.distance" name="distance" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Latitude</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.latitude" name="latitude" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Longitude</mat-label>
       <input matInput type="number" [(ngModel)]="noonReport.longitude" name="longitude" required>
     </mat-form-field>
+    
     <mat-form-field>
       <mat-label>Comments</mat-label>
       <textarea matInput [(ngModel)]="noonReport.comments" name="comments"></textarea>
     </mat-form-field>
+    
     <div mat-dialog-actions>
       <button mat-button type="button" (click)="onClose()">Close</button>
       <button mat-button type="submit" color="primary">Create</button>

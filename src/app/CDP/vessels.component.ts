@@ -110,6 +110,15 @@ export interface odvReportCreateDto {
   endDate: Date;
 }
 
+export interface portDto {
+  name: string;
+  countryCode: string;
+  location: string;
+  latitude: number;
+  longtitude: number;
+  isEu: boolean;
+}
+
 @Component({
   standalone: true,
   selector: 'app-vessels',
@@ -135,21 +144,40 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
   loading: boolean = true;
   displayedColumns: string[] = ['name', 'imo', 'yearBuilt', 'deadweight', 'grossTonnage', 'action'];
   dataLoaded: boolean = false;
+  permissions: string[] = [];
 
   constructor(
     private vesselsService: VesselsService,
     public dialog: MatDialog,
     private cdref: ChangeDetectorRef,
     private ngZone: NgZone,
-    private snackbarService: SnackbarService,
+    private snackbarService: SnackbarService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    const userString = sessionStorage.getItem('user');
+    if (userString) {
+      const user = JSON.parse(userString);
+      if (user && user.roles) {
+        this.getRolesForUser(user.roles);
+      }
+    }
+  }
+
+  getRolesForUser(roleIds: number[]) {
+    this.vesselsService.getRoles().subscribe({
+      next: (roles) => {
+        const userRoles = roles.filter(role => roleIds.includes(role.id));
+        this.permissions = userRoles.flatMap(role => role.permissions);
+        this.loadData();
+      },
+      error: (error) => {
+        console.error('Error loading roles:', error);
+      }
+    });
+  }
 
   ngAfterViewInit() {
-    setTimeout(() => {
-      this.loadData();
-    });
   }
 
   ngAfterViewChecked() {}
@@ -291,4 +319,7 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
     });
   }
 
+  canPerformAction(action: string): boolean {
+    return this.permissions.includes(action);
+  }
 }

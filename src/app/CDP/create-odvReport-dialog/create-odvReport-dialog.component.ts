@@ -1,15 +1,13 @@
 import { Component, Inject } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { VesselsService } from '../vessels.service';
-import { ODVReportDto } from '../vessels.component';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatLabel } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { MatNativeDateModule, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MAT_DATE_LOCALE, MatNativeDateModule } from '@angular/material/core';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { MatFormFieldModule, MatLabel } from '@angular/material/form-field';
+import { MatInput, MatInputModule } from '@angular/material/input';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
+import { ODVReportDto } from '../vessels.component';
+import { VesselsService } from '../vessels.service';
 
 @Component({
   standalone: true,
@@ -58,6 +56,6 @@ export class CreateODVReportDialogComponent {
     this.vesselsService.createODVReport(this.odvReport).subscribe(() => {
       this.dialogRef.close(this.odvReport)
     });
-    this.snackbarService.show('User created', 'Close', 3000);
+    this.snackbarService.show('ODV Report Created', 'Close', 3000);
   }
 }

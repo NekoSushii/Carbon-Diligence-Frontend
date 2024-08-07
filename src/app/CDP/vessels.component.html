@@ -3,7 +3,7 @@
 </div>
 
 <div *ngIf="!loading && dataLoaded">
-  <button mat-raised-button color="primary" (click)="openCreateVesselDialog()">Create Vessel</button>
+  <button mat-raised-button color="primary" (click)="openCreateVesselDialog()" *ngIf="canPerformAction('Create')">Create Vessel</button>
 
   <table mat-table [dataSource]="vesselsData" class="mat-elevation-z8">
     <ng-container matColumnDef="name">
@@ -39,14 +39,14 @@
     <ng-container matColumnDef="action">
       <th mat-header-cell *matHeaderCellDef> Action </th>
       <td mat-cell *matCellDef="let vessel">
-        <button mat-icon-button color="accent" (click)="openODVReportsDialog(vessel)">
+        <button mat-icon-button color="accent" (click)="openODVReportsDialog(vessel)" *ngIf="canPerformAction('Read')">
           <mat-icon>visibility</mat-icon>
         </button>
-        <button mat-icon-button color="primary" (click)="openEditDialog(vessel)">
+        <button mat-icon-button color="primary" (click)="openEditDialog(vessel)" *ngIf="canPerformAction('Update')">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="warn" (click)="confirmDelete(vessel)">
-          <mat-icon>{{ 'delete' }}</mat-icon>
+        <button mat-icon-button color="warn" (click)="confirmDelete(vessel)" *ngIf="canPerformAction('Delete')">
+          <mat-icon>delete</mat-icon>
         </button>
       </td>
     </ng-container>
