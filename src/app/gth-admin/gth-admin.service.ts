@@ -90,4 +90,8 @@ export class GthAdminService {
     return this.http.delete<number>(`${this.apiUrl}/Imo/DeleteImo/${IMOId}`, { withCredentials: true });
   }
 
+  deleteSubscription(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/abs/User/DeleteSubscription/${id}`, { withCredentials: true });
+  }
+
 }

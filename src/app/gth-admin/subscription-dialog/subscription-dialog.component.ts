@@ -13,7 +13,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { isEqual } from 'lodash';
 import { SnackbarService } from '../../snackbarService/snackbar.service';
-import { CreateSubscriptionDialogComponent } from '../create-subscription-dialog/create-subscription-dialog.component';
 import { ApplicationDto, OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
 
@@ -32,7 +31,6 @@ import { GthAdminService } from '../gth-admin.service';
     MatTableModule,
     MatButtonModule,
     MatCheckboxModule,
-    CreateSubscriptionDialogComponent,
     MatIconModule,
     MatDatepickerModule,
     MatNativeDateModule
@@ -44,11 +42,23 @@ import { GthAdminService } from '../gth-admin.service';
 export class SubscriptionDialogComponent {
   @Output() dataChanged = new EventEmitter<void>();
 
-  displayedColumns: string[] = ['name', 'description', 'costPerLicense', 'organizationId', 'applicationId', 'dateFrom', 'dateTo', 'isActive'];
+  displayedColumns: string[] = ['name', 'description', 'costPerLicense', 'organizationId', 'applicationId', 'dateFrom', 'dateTo', 'isActive', 'actions'];
   subscriptions: SubscriptionDto[] = [];
   originalSubscriptions: SubscriptionDto[];
   organizations: OrganizationDto[] = [];
   applications: ApplicationDto[] = [];
+
+  createSubscriptionMode: boolean = false;
+  newSubscription: SubscriptionDto = {
+    id: 0,
+    name: '',
+    description: '',
+    costPerLicense: 0,
+    organizationId: 0,
+    applicationId: 0,
+    dateFrom: new Date(),
+    dateTo: new Date()
+  };
 
   constructor(
     public dialogRef: MatDialogRef<SubscriptionDialogComponent>,
@@ -62,6 +72,7 @@ export class SubscriptionDialogComponent {
     this.originalSubscriptions = JSON.parse(JSON.stringify(data.subscriptions));
     this.organizations = data.organizations;
     this.applications = data.applications;
+    this.loadSubscriptions();
   }
 
   isWithinDateRange(dateFrom: Date, dateTo: Date): boolean {
@@ -77,7 +88,7 @@ export class SubscriptionDialogComponent {
     const changedSubscriptions = this.subscriptions.filter((subscription, index) => {
       return !isEqual(subscription, this.originalSubscriptions[index]);
     });
-
+  
     if (changedSubscriptions.length > 0) {
       this.gthAdminService.updateSubscriptions(changedSubscriptions).subscribe({
         next: () => {
@@ -94,58 +105,36 @@ export class SubscriptionDialogComponent {
     }
   }
 
-  createSubscription(): void {
-    const dialogRef = this.dialog.open(CreateSubscriptionDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Create New Subscription',
-        name: '',
-        description: '',
-        costPerLicense: 0,
-        organizationId: null,
-        applicationId: null,
-        dateFrom: null,
-        dateTo: null,
-        organizations: this.organizations,
-        applications: this.applications
+  switchToCreateSubscription(): void {
+    this.createSubscriptionMode = true;
+  }
+
+  saveNewSubscription(): void {
+    this.gthAdminService.createSubscription(this.newSubscription).subscribe({
+      next: (response) => {
+        this.newSubscription.id = response.id;
+        this.subscriptions.push(this.newSubscription);
+        this.refreshData();
+        this.dataChanged.emit();
+        this.snackbarService.show('Subscription created!', 'Close', 3000);
+      },
+      error: (error) => {
+        console.error('Error creating subscription:', error);
       }
     });
+    this.createSubscriptionMode = false;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newSubscription: SubscriptionDto = {
-          id: 0,
-          name: result.name,
-          description: result.description,
-          costPerLicense: result.costPerLicense,
-          organizationId: result.organizationId,
-          applicationId: result.applicationId,
-          dateFrom: result.dateFrom,
-          dateTo: result.dateTo
-        };
-
-        this.gthAdminService.createSubscription(newSubscription).subscribe({
-          next: (response) => {
-            newSubscription.id = response.id;
-            this.subscriptions.push(newSubscription);
-            this.refreshData();
-            this.dataChanged.emit();
-            this.snackbarService.show('Subscription created!', 'Close', 3000);
-          },
-          error: (error) => {
-            console.error('Error creating subscription:', error);
-          }
-        });
-      }
-    });
+  cancelCreateSubscription(): void {
+    this.createSubscriptionMode = false;
   }
 
   deleteSubscription(subscription: SubscriptionDto): void {
     if (confirm(`Are you sure you want to delete the subscription ${subscription.name}?`)) {
       const updatedSubscription = { ...subscription, isActive: false };
-      this.gthAdminService.updateSubscription(updatedSubscription.id, updatedSubscription).subscribe({
+      this.gthAdminService.deleteSubscription(updatedSubscription.id).subscribe({
         next: () => {
-          this.refreshData();
+          this.loadSubscriptions();
           this.dataChanged.emit();
           this.snackbarService.show('Subscription deleted!', 'Close', 3000);
         },
@@ -156,20 +145,17 @@ export class SubscriptionDialogComponent {
     }
   }
 
-  undeleteSubscription(subscription: SubscriptionDto): void {
-    if (confirm(`Are you sure you want to restore the subscription ${subscription.name}?`)) {
-      const updatedSubscription = { ...subscription, isActive: true };
-      this.gthAdminService.updateSubscription(updatedSubscription.id, updatedSubscription).subscribe({
-        next: () => {
-          this.refreshData();
-          this.dataChanged.emit();
-          this.snackbarService.show('Subscription restored!', 'Close', 3000);
-        },
-        error: (error) => {
-          console.error('Error restoring subscription:', error);
-        }
-      });
-    }
+  private loadSubscriptions(): void {
+    this.gthAdminService.getSubscriptions().subscribe({
+      next: (subscriptions) => {
+        this.subscriptions = subscriptions;
+        this.originalSubscriptions = JSON.parse(JSON.stringify(subscriptions));
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading subscriptions:', error);
+      }
+    });
   }
 
   private refreshData(): void {

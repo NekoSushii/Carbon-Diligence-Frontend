@@ -242,17 +242,13 @@ export class GthAdminComponent implements OnInit, AfterViewInit, AfterViewChecke
       maxHeight: '80vh',
       data: { subscriptions: this.subscriptionsData, organizations: this.organizationsData, applications: this.applicationsData }
     });
-
+  
     dialogRef.componentInstance.dataChanged.subscribe(() => {
       this.loadData();
     });
-
-    dialogRef.afterClosed().subscribe((changedSubscriptions: SubscriptionDto[]) => {
-      if (changedSubscriptions && changedSubscriptions.length > 0) {
-        this.updateSubscriptions(changedSubscriptions);
-      } else {
-        this.loadData();
-      }
+  
+    dialogRef.afterClosed().subscribe(() => {
+      this.loadData();
     });
   }
 

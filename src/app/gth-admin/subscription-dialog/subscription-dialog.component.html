@@ -1,9 +1,8 @@
-<div class="dialog-container">
+<div class="dialog-container" *ngIf="!createSubscriptionMode">
   <h2>Manage Subscriptions</h2>
-  <button mat-button (click)="createSubscription()">Create New Subscription</button>
+  <button mat-button (click)="switchToCreateSubscription()">Create New Subscription</button>
   <div class="table-container">
     <table mat-table [dataSource]="subscriptions" class="mat-elevation-z8">
-      <!-- Name Column -->
       <ng-container matColumnDef="name">
         <th mat-header-cell *matHeaderCellDef> Name </th>
         <td mat-cell *matCellDef="let subscription">
@@ -14,7 +13,6 @@
         </td>
       </ng-container>
 
-      <!-- Description Column -->
       <ng-container matColumnDef="description">
         <th mat-header-cell *matHeaderCellDef> Description </th>
         <td mat-cell *matCellDef="let subscription">
@@ -25,7 +23,6 @@
         </td>
       </ng-container>
 
-      <!-- Cost Per License Column -->
       <ng-container matColumnDef="costPerLicense">
         <th mat-header-cell *matHeaderCellDef> Cost Per License </th>
         <td mat-cell *matCellDef="let subscription">
@@ -36,7 +33,6 @@
         </td>
       </ng-container>
 
-      <!-- Organization Column -->
       <ng-container matColumnDef="organizationId">
         <th mat-header-cell *matHeaderCellDef> Organization </th>
         <td mat-cell *matCellDef="let subscription">
@@ -51,7 +47,6 @@
         </td>
       </ng-container>
 
-      <!-- Application Column -->
       <ng-container matColumnDef="applicationId">
         <th mat-header-cell *matHeaderCellDef> Application </th>
         <td mat-cell *matCellDef="let subscription">
@@ -66,7 +61,6 @@
         </td>
       </ng-container>
 
-      <!-- Date From Column -->
       <ng-container matColumnDef="dateFrom">
         <th mat-header-cell *matHeaderCellDef> Date From </th>
         <td mat-cell *matCellDef="let subscription">
@@ -79,7 +73,6 @@
         </td>
       </ng-container>
 
-      <!-- Date To Column -->
       <ng-container matColumnDef="dateTo">
         <th mat-header-cell *matHeaderCellDef> Date To </th>
         <td mat-cell *matCellDef="let subscription">
@@ -92,7 +85,6 @@
         </td>
       </ng-container>
 
-      <!-- Active Status Column -->
       <ng-container matColumnDef="isActive">
         <th mat-header-cell *matHeaderCellDef> Active Status </th>
         <td mat-cell *matCellDef="let subscription">
@@ -102,17 +94,15 @@
         </td>
       </ng-container>
 
-      <!-- Actions Column -->
-      <!-- <ng-container matColumnDef="actions">
+      <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef> Actions </th>
         <td mat-cell *matCellDef="let subscription">
-          <button mat-icon-button color="warn" (click)="subscription.isActive ? deleteSubscription(subscription) : undeleteSubscription(subscription)">
-            <mat-icon>{{ subscription.isActive ? 'delete' : 'restore' }}</mat-icon>
+          <button mat-icon-button color="warn" (click)="deleteSubscription(subscription)">
+            <mat-icon>{{'delete'}}</mat-icon>
           </button>
         </td>
-      </ng-container> -->
+      </ng-container>
 
-      <!-- Header and Row Declarations -->
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
@@ -120,5 +110,53 @@
   <div mat-dialog-actions>
     <button mat-button (click)="onClose()">Close</button>
     <button mat-button (click)="saveChanges()">Save</button>
+  </div>
+</div>
+
+<div class="dialog-container" *ngIf="createSubscriptionMode">
+  <h2>Create New Subscription</h2>
+  <mat-form-field appearance="fill">
+    <mat-label>Name</mat-label>
+    <input matInput [(ngModel)]="newSubscription.name">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Description</mat-label>
+    <input matInput [(ngModel)]="newSubscription.description">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Cost Per License</mat-label>
+    <input matInput type="number" [(ngModel)]="newSubscription.costPerLicense">
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Organization</mat-label>
+    <mat-select [(ngModel)]="newSubscription.organizationId">
+      <mat-option *ngFor="let organization of organizations" [value]="organization.id">
+        {{ organization.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Application</mat-label>
+    <mat-select [(ngModel)]="newSubscription.applicationId">
+      <mat-option *ngFor="let application of applications" [value]="application.id">
+        {{ application.name }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Date From</mat-label>
+    <input matInput [matDatepicker]="picker1" [(ngModel)]="newSubscription.dateFrom">
+    <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+    <mat-datepicker #picker1></mat-datepicker>
+  </mat-form-field>
+  <mat-form-field appearance="fill">
+    <mat-label>Date To</mat-label>
+    <input matInput [matDatepicker]="picker2" [(ngModel)]="newSubscription.dateTo">
+    <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+    <mat-datepicker #picker2></mat-datepicker>
+  </mat-form-field>
+  <div mat-dialog-actions>
+    <button mat-button (click)="cancelCreateSubscription()">Cancel</button>
+    <button mat-button (click)="saveNewSubscription()">Save</button>
   </div>
 </div>
