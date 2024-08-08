@@ -110,6 +110,11 @@ export class SubscriptionDialogComponent {
   }
 
   saveNewSubscription(): void {
+    if (!this.newSubscription.name.trim()) {
+      this.snackbarService.show('Please provide a name for the subscription.', 'Close', 3000);
+      return;
+    }
+  
     this.gthAdminService.createSubscription(this.newSubscription).subscribe({
       next: (response) => {
         this.newSubscription.id = response.id;

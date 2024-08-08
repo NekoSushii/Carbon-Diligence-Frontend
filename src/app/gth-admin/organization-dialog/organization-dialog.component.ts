@@ -88,10 +88,16 @@ export class OrganizationDialogComponent {
   }
 
   saveNewOrganization(): void {
+    if (!this.newOrganization.name.trim()) {
+      this.snackbarService.show('Please provide a name for the organization.', 'Close', 3000);
+      return;
+    }
+
     this.gthAdminService.createOrganization(this.newOrganization).subscribe({
       next: (response) => {
         this.newOrganization.id = response.id;
         this.snackbarService.show('Organization created!', 'Close', 3000);
+        this.creatingOrganization = false;
         this.refreshData();
         this.dataChanged.emit();
       },
@@ -99,7 +105,6 @@ export class OrganizationDialogComponent {
         console.error('Error creating organization:', error);
       }
     });
-    this.creatingOrganization = false;
   }
 
   cancelCreate(): void {
