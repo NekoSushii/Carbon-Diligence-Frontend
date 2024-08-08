@@ -1,4 +1,4 @@
-<div class="dialog-container">
+<div class="dialog-container" *ngIf="!creatingOrganization; else createForm">
   <h2>Manage Organizations</h2>
   <button mat-button (click)="createOrganization()">Create New Organization</button>
   <div class="table-container">
@@ -62,3 +62,29 @@
     <button mat-button (click)="saveChanges()">Save</button>
   </div>
 </div>
+
+<ng-template #createForm>
+  <div mat-dialog-content class="dialog-container">
+    <h2>Create New Organization</h2>
+    <mat-form-field appearance="fill">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="newOrganization.name">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Description</mat-label>
+      <input matInput [(ngModel)]="newOrganization.description">
+    </mat-form-field>
+    <mat-form-field appearance="fill">
+      <mat-label>Subscriptions</mat-label>
+      <mat-select [(ngModel)]="newOrganization.subscription" multiple>
+        <mat-option *ngFor="let option of data.subscriptions" [value]="option.id">
+          {{ option.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <div mat-dialog-actions>
+      <button mat-button (click)="cancelCreate()">Cancel</button>
+      <button mat-button (click)="saveNewOrganization()">Save</button>
+    </div>
+  </div>
+</ng-template>

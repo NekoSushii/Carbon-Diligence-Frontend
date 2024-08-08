@@ -10,10 +10,9 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { isEqual } from 'lodash';
-import { CreateOrganizationDialogComponent } from '../create-organization-dialog/create-organization-dialog.component';
+import { SnackbarService } from '../../snackbarService/snackbar.service';
 import { OrganizationDto, SubscriptionDto } from '../gth-admin.component';
 import { GthAdminService } from '../gth-admin.service';
-import { SnackbarService } from '../../snackbarService/snackbar.service';
 
 @Component({
   selector: 'app-organization-dialog',
@@ -30,7 +29,6 @@ import { SnackbarService } from '../../snackbarService/snackbar.service';
     MatTableModule,
     MatButtonModule,
     MatCheckboxModule,
-    CreateOrganizationDialogComponent,
     MatIconModule
   ]
 })
@@ -39,7 +37,15 @@ export class OrganizationDialogComponent {
 
   displayedColumns: string[] = ['name', 'description', 'isActive', 'subscription', 'actions'];
   organizations: OrganizationDto[] = [];
-  originalOrganizations: OrganizationDto[];
+  originalOrganizations: OrganizationDto[] = [];
+  creatingOrganization = false;
+  newOrganization: OrganizationDto = {
+    id: 0,
+    name: '',
+    description: '',
+    isActive: true,
+    subscription: []
+  };
 
   constructor(
     public dialogRef: MatDialogRef<OrganizationDialogComponent>,
@@ -49,8 +55,7 @@ export class OrganizationDialogComponent {
     private cdr: ChangeDetectorRef,
     private snackbarService: SnackbarService
   ) {
-    this.organizations = JSON.parse(JSON.stringify(data.organizations));
-    this.originalOrganizations = JSON.parse(JSON.stringify(data.organizations));
+    this.refreshData();
   }
 
   onClose(): void {
@@ -65,6 +70,7 @@ export class OrganizationDialogComponent {
     if (changedOrganizations.length > 0) {
       this.gthAdminService.updateOrganizations(changedOrganizations).subscribe({
         next: () => {
+          this.snackbarService.show('Organization updated!', 'Close', 3000);
           this.refreshData();
           this.dataChanged.emit();
         },
@@ -72,48 +78,32 @@ export class OrganizationDialogComponent {
           console.error('Error updating organizations:', error);
         }
       });
-      this.snackbarService.show('Organization updated!', 'Close', 3000);
     } else {
       this.refreshData();
     }
   }
 
   createOrganization(): void {
-    const dialogRef = this.dialog.open(CreateOrganizationDialogComponent, {
-      width: '400px',
-      data: {
-        title: 'Create New Organization',
-        name: '',
-        description: '',
-        options: this.data.subscriptions,
-        selectedOptions: []
+    this.creatingOrganization = true;
+  }
+
+  saveNewOrganization(): void {
+    this.gthAdminService.createOrganization(this.newOrganization).subscribe({
+      next: (response) => {
+        this.newOrganization.id = response.id;
+        this.snackbarService.show('Organization created!', 'Close', 3000);
+        this.refreshData();
+        this.dataChanged.emit();
+      },
+      error: (error) => {
+        console.error('Error creating organization:', error);
       }
     });
+    this.creatingOrganization = false;
+  }
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        const newOrganization: OrganizationDto = {
-          id: 0,
-          name: result.name,
-          description: result.description,
-          isActive: true,
-          subscription: result.selectedOptions
-        };
-
-        this.gthAdminService.createOrganization(newOrganization).subscribe({
-          next: (response) => {
-            newOrganization.id = response.id;
-            this.organizations.push(newOrganization);
-            this.refreshData();
-            this.dataChanged.emit();
-            this.snackbarService.show('Organization created!', 'Close', 3000);
-          },
-          error: (error) => {
-            console.error('Error creating organization:', error);
-          }
-        });
-      }
-    });
+  cancelCreate(): void {
+    this.creatingOrganization = false;
   }
 
   deleteOrganization(organization: OrganizationDto): void {
@@ -121,6 +111,7 @@ export class OrganizationDialogComponent {
       const updatedOrganization = { ...organization, isActive: false };
       this.gthAdminService.updateOrganization(updatedOrganization.id, updatedOrganization).subscribe({
         next: () => {
+          this.snackbarService.show('Organization deleted!', 'Close', 3000);
           this.refreshData();
           this.dataChanged.emit();
         },
@@ -136,6 +127,7 @@ export class OrganizationDialogComponent {
       const updatedOrganization = { ...organization, isActive: true };
       this.gthAdminService.updateOrganization(updatedOrganization.id, updatedOrganization).subscribe({
         next: () => {
+          this.snackbarService.show('Organization restored!', 'Close', 3000);
           this.refreshData();
           this.dataChanged.emit();
         },
@@ -147,7 +139,15 @@ export class OrganizationDialogComponent {
   }
 
   private refreshData(): void {
-    this.originalOrganizations = JSON.parse(JSON.stringify(this.organizations));
-    this.cdr.detectChanges();
+    this.gthAdminService.getOrganizations().subscribe({
+      next: (organizations) => {
+        this.organizations = organizations;
+        this.originalOrganizations = JSON.parse(JSON.stringify(organizations));
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error fetching organizations:', error);
+      }
+    });
   }
 }
