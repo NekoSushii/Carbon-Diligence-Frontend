@@ -65,6 +65,16 @@ export interface VesselData {
   grossTonnage: number;
 }
 
+export interface CreateVesselData {
+  vesselTypeId: number;
+  flagId: number | null;
+  imo: number;
+  yearBuilt: number;
+  name: string;
+  deadweight: number;
+  grossTonnage: number;
+}
+
 export interface ODVReportDto {
   id: number;
   vesselId: number;

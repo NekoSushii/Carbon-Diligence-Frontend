@@ -24,13 +24,13 @@ export class AuthCallbackService {
         this.http.post('http://localhost:5206/api/Login/Authenticate', quotedToken, { headers, withCredentials: true })
       );
 
-      if (response && response.id !== 0) {
+      if (response && response.isNewUser === false) {
         return {
-          id: response.id,
-          name: response.name,
-          email: response.email,
-          roles: response.roles,
-          userGroups: response.userGroups,
+          id: response.user.id,
+          name: response.user.name,
+          email: response.user.email,
+          roles: response.user.roles,
+          userGroups: response.user.userGroups,
         };
       } else {
         this.snackBarService.show("No user found!", 'close', 3000);

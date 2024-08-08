@@ -114,7 +114,7 @@ export class OrganizationDialogComponent {
   deleteOrganization(organization: OrganizationDto): void {
     if (confirm(`Are you sure you want to delete the organization ${organization.name}?`)) {
       const updatedOrganization = { ...organization, isActive: false };
-      this.gthAdminService.updateOrganization(updatedOrganization.id, updatedOrganization).subscribe({
+      this.gthAdminService.deleteOrganization(updatedOrganization.id).subscribe({
         next: () => {
           this.snackbarService.show('Organization deleted!', 'Close', 3000);
           this.refreshData();

@@ -55,7 +55,7 @@ export class GthAdminService {
   }
 
   updateOrganization(id: number, organization: OrganizationDto): Observable<any> {
-    return this.http.put(`${this.apiUrl}/abs/User/UpdateOrganization`, organization, { withCredentials: true });
+    return this.http.put(`${this.apiUrl}/abs/User/UpdateOrganization/${id}`, organization, { withCredentials: true });
   }
 
   updateUser(user: UserDataDto): Observable<any> {
@@ -88,6 +88,10 @@ export class GthAdminService {
 
   deleteImo(organizationId: number, IMOId: number): Observable<number> { // In the future, change to support organization
     return this.http.delete<number>(`${this.apiUrl}/Imo/DeleteImo/${IMOId}`, { withCredentials: true });
+  }
+
+  deleteOrganization(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/abs/User/DeleteOrganization/${id}`, { withCredentials: true });
   }
 
   deleteSubscription(id: number): Observable<any> {

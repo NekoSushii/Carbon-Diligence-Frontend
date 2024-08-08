@@ -58,8 +58,17 @@ export class VesselsService {
     return this.http.put(`${this.apiUrl}Vessel/UpdateVessel/${vessel.id}`, vessel, { withCredentials: true });
   }
 
-  createVessel(vessel: VesselData): Observable<any> {
-    return this.http.post(`${this.apiUrl}Vessel/AddVessel`, vessel, { withCredentials: true });
+  createVessel(vessel: VesselDto): Observable<any> {
+    const createVesselData = {
+      name: vessel.name,
+      imo: vessel.imo,
+      vesselTypeId: vessel.vesselTypeId,
+      flagId: null,
+      yearBuilt: vessel.yearBuilt,
+      deadweight: vessel.deadweight,
+      grossTonnage: vessel.grossTonnage,
+    }
+    return this.http.post(`${this.apiUrl}Vessel/AddVessel`, createVesselData, { withCredentials: true });
   }
 
   createVesselType(vessel: VesselTypeData): Observable<any> {
