@@ -53,10 +53,10 @@ export class CreateVesselDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.fetchIMOs();
+    this.fetchData();
   }
 
-  fetchIMOs() {
+  fetchData() {
     this.vesselsService.getIMOs().subscribe({
       next: (imos) => {
         this.imos = imos;
@@ -65,6 +65,15 @@ export class CreateVesselDialogComponent implements OnInit {
         console.error('Error fetching IMOs:', error);
       }
     });
+
+    this.vesselsService.getVesselTypes().subscribe({
+      next: (vesselTypes) => {
+        this.vesselTypes = vesselTypes
+      },
+      error: (error) => {
+        console.error('Error fetching Vessel Types:', error);
+      }
+    })
   }
 
   onClose(): void {

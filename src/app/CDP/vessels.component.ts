@@ -13,6 +13,7 @@ import { SnackbarService } from '../snackbarService/snackbar.service';
 import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
 import { CreateVesselDialogComponent } from './create-vessel-dialog/create-vessel-dialog.component';
 import { EditVesselDialogComponent } from './edit-vessel-dialog/edit-vessel-dialog.component';
+import { ManageVesselTypesDialogComponent } from './manage-vessel-types-dialog/manage-vessel-types-dialog.component';
 import { ODVReportsDialogComponent } from './odvReports-dialog/odvReports-dialog.component';
 import { VesselsService } from './vessels.service';
 
@@ -315,6 +316,21 @@ export class VesselsComponent implements OnInit, AfterViewInit, AfterViewChecked
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+      }
+    });
+  }
+
+  openManageVesselTypesDialog() {
+    const dialogRef = this.dialog.open(ManageVesselTypesDialogComponent, {
+      width: '80vw',
+      height: '80vh',
+      maxWidth: '80vw',
+      maxHeight: '80vh'
+    });
+  
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.loadData();
       }
     });
   }

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { forkJoin, Observable } from 'rxjs';
 import { RolesVesselsDto } from '../admin/admin.component';
 import { IMODto } from '../gth-admin/gth-admin.component';
+import { VesselTypeData } from './manage-vessel-types-dialog/manage-vessel-types-dialog.component';
 import { ODVNoonReportData, odvReportCreateDto, portDto, VesselData, VesselDto, VesselTypeDto } from './vessels.component';
 
 @Injectable({
@@ -48,6 +49,10 @@ export class VesselsService {
   getRoles(): Observable<RolesVesselsDto[]> {
     return this.http.get<RolesVesselsDto[]>(`${this.apiUrl}UserManagement/GetRoles`, { withCredentials: true });
   }
+
+  getVesselTypes(): Observable<VesselTypeDto[]> {
+    return this.http.get<VesselTypeDto[]>(`${this.apiUrl}Vessel/GetVesselTypes`, { withCredentials: true });
+  }
   
   updateVessel(vessel: VesselData): Observable<any> {
     return this.http.put(`${this.apiUrl}Vessel/UpdateVessel/${vessel.id}`, vessel, { withCredentials: true });
@@ -55,6 +60,10 @@ export class VesselsService {
 
   createVessel(vessel: VesselData): Observable<any> {
     return this.http.post(`${this.apiUrl}Vessel/AddVessel`, vessel, { withCredentials: true });
+  }
+
+  createVesselType(vessel: VesselTypeData): Observable<any> {
+    return this.http.post(`${this.apiUrl}Vessel/AddVesselType`, vessel, { withCredentials: true });
   }
 
   createODVReport(odvReport: odvReportCreateDto): Observable<any> {
@@ -65,12 +74,20 @@ export class VesselsService {
     return this.http.post(`${this.apiUrl}ODV/AddOdvNoonReport`, noonReport, { withCredentials: true })
   }
 
+  updateVesselType(vesselType: VesselTypeDto): Observable<any> {
+    return this.http.post(`${this.apiUrl}Vessel/UpdateVesselType/${vesselType.id}`, { withCredentials: true })
+  }
+
   deleteVesselById(vesselId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}Vessel/DeleteVessel/${vesselId}`, { withCredentials: true });
   }
 
   deleteODVReport(odvReportId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}ODV/DeleteOdvReport/${odvReportId}`, { withCredentials: true });
+  }
+
+  deleteVesselType(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}Vessel/DeleteVesselType/${id}`, { withCredentials: true });
   }
 
 }

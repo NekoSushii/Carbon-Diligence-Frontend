@@ -1,0 +1,66 @@
+<div class="dialog-container" *ngIf="currentPage === 'list'">
+    <h2>Manage Vessel Types</h2>
+    <button mat-raised-button color="primary" (click)="openCreatePage()">Create Vessel Type</button>
+    <table mat-table [dataSource]="vesselTypes" class="mat-elevation-z8">
+      <ng-container matColumnDef="name">
+        <th mat-header-cell *matHeaderCellDef> Name </th>
+        <td mat-cell *matCellDef="let vesselType"> {{ vesselType.name }} </td>
+      </ng-container>
+      <ng-container matColumnDef="code">
+        <th mat-header-cell *matHeaderCellDef> Code </th>
+        <td mat-cell *matCellDef="let vesselType"> {{ vesselType.code }} </td>
+      </ng-container>
+      <ng-container matColumnDef="cargoTypes">
+        <th mat-header-cell *matHeaderCellDef> Cargo Types </th>
+        <td mat-cell *matCellDef="let vesselType"> {{ vesselType.cargoTypes }} </td>
+      </ng-container>
+      <ng-container matColumnDef="customTypes">
+        <th mat-header-cell *matHeaderCellDef> Custom Types </th>
+        <td mat-cell *matCellDef="let vesselType"> {{ vesselType.customTypes }} </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let vesselType">
+          <button mat-icon-button color="primary" (click)="openEditPage(vesselType)">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="deleteVesselType(vesselType)">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="['name', 'code', 'cargoTypes', 'customTypes', 'action']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['name', 'code', 'cargoTypes', 'customTypes', 'action'];"></tr>
+    </table>
+    <button mat-raised-button color="warn" (click)="closeDialog()">Close</button>
+  </div>
+  
+  <div class="dialog-container" *ngIf="currentPage === 'create' || currentPage === 'edit'">
+    <h2>{{ currentPage === 'create' ? 'Create' : 'Edit' }} Vessel Type</h2>
+    <div class="form-container">
+      <mat-form-field appearance="fill">
+        <mat-label>Name</mat-label>
+        <input matInput [(ngModel)]="selectedVesselType.name" name="name" required>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Code</mat-label>
+        <input matInput [(ngModel)]="selectedVesselType.code" name="code" required>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Cargo Types</mat-label>
+        <input matInput [(ngModel)]="selectedVesselType.cargoTypes" name="cargoTypes" required>
+      </mat-form-field>
+      
+      <mat-form-field appearance="fill">
+        <mat-label>Custom Types</mat-label>
+        <input matInput [(ngModel)]="selectedVesselType.customTypes" name="customTypes" required>
+      </mat-form-field>
+    </div>
+    <div mat-dialog-actions>
+      <button mat-button (click)="currentPage = 'list'">Cancel</button>
+      <button mat-button (click)="saveVesselType()">{{ currentPage === 'create' ? 'Create' : 'Save' }}</button>
+    </div>
+  </div>
+  

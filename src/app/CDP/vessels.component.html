@@ -4,6 +4,7 @@
 
 <div *ngIf="!loading && dataLoaded">
   <button mat-raised-button color="primary" (click)="openCreateVesselDialog()" *ngIf="canPerformAction('Create')">Create Vessel</button>
+  <button mat-raised-button color="accent" (click)="openManageVesselTypesDialog()">Manage Vessel Types</button>
 
   <table mat-table [dataSource]="vesselsData" class="mat-elevation-z8">
     <ng-container matColumnDef="name">
