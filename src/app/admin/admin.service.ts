@@ -72,7 +72,7 @@ export class AdminService {
   updateRoles(changedRoles: RolesVesselsDto[]): Observable<any> {
     return from(changedRoles).pipe(
       concatMap(roles =>
-        this.http.put(`${this.apiUrl}/UserManagement/UpdateRole`, roles, { withCredentials: true })
+        this.http.put(`${this.apiUrl}/UserManagement/UpdateRole/${roles.id}`, roles, { withCredentials: true })
       )
     );
   }
@@ -80,7 +80,7 @@ export class AdminService {
   updateUserGroups(userGroups: UserGroupDto[]): Observable<any> {
     return from(userGroups).pipe(
       concatMap(userGroup =>
-        this.http.put(`${this.apiUrl}/UserManagement/UpdateUserGroup`, userGroup, { withCredentials: true })
+        this.http.put(`${this.apiUrl}/UserManagement/UpdateUserGroup/${userGroup.id}`, userGroup, { withCredentials: true })
       )
     );
   }
@@ -116,6 +116,6 @@ export class AdminService {
   }
 
   updateUser(user: UserDataDto): Observable<any> {
-    return this.http.put(`${this.apiUrl}/User/UpdateUser`, user, { withCredentials: true });
+    return this.http.put(`${this.apiUrl}/User/UpdateUser/${user.id}`, user, { withCredentials: true });
   }
 }

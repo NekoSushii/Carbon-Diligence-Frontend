@@ -29,7 +29,7 @@ export class GthAdminService {
   }
 
   getImoByOrganization(organizationId: number): Observable<IMODto[]> {
-    return this.http.get<IMODto[]>(`${this.apiUrl}/Imo/GetImos`, { withCredentials: true });
+    return this.http.get<IMODto[]>(`${this.apiUrl}/Imo/GetOrganizationImos/${organizationId}`, { withCredentials: true });
   }
 
   loadAllData(): Observable<{
@@ -49,7 +49,7 @@ export class GthAdminService {
   updateOrganizations(changedOrganizations: OrganizationDto[]): Observable<any> {
     return from(changedOrganizations).pipe(
       concatMap(org =>
-        this.http.put(`${this.apiUrl}/abs/User/UpdateOrganization`, org, { withCredentials: true })
+        this.http.put(`${this.apiUrl}/abs/User/UpdateOrganization/${org.id}`, org, { withCredentials: true })
       )
     );
   }
@@ -59,19 +59,19 @@ export class GthAdminService {
   }
 
   updateUser(user: UserDataDto): Observable<any> {
-    return this.http.put(`${this.apiUrl}/abs/User/UpdateUser`, user, { withCredentials: true });
+    return this.http.put(`${this.apiUrl}/abs/User/UpdateUser/${user.id}`, user, { withCredentials: true });
   }
 
   updateSubscriptions(changedSubscriptions: SubscriptionDto[]): Observable<any> {
     return from(changedSubscriptions).pipe(
       concatMap(subscription =>
-        this.http.put(`${this.apiUrl}/abs/User/UpdateSubscription`, subscription, { withCredentials: true })
+        this.http.put(`${this.apiUrl}/abs/User/UpdateSubscription/${subscription.id}`, subscription, { withCredentials: true })
       )
     );
   }
 
   updateSubscription(id: number, subscription: SubscriptionDto): Observable<any> {
-    return this.http.put(`${this.apiUrl}/abs/User/UpdateSubscription`, subscription, { withCredentials: true });
+    return this.http.put(`${this.apiUrl}/abs/User/UpdateSubscription/${id}`, subscription, { withCredentials: true });
   }
 
   createSubscription(subscription: SubscriptionDto): Observable<SubscriptionDto> {
